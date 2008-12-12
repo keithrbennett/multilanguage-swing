@@ -24,11 +24,9 @@ class FrameInRuby < JFrame
 
   def initialize
     super "Fahrenheit <--> Celsius Converter"
-    mainContentPane = getContentPane
-    p mainContentPane
-    contentPane.add createConvertersPanel, BorderLayout::CENTER
-    contentPane.add createButtonsPanel,    BorderLayout::SOUTH
-    contentPane.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12))
+    getContentPane.add createConvertersPanel, BorderLayout::CENTER
+    getContentPane.add createButtonsPanel,    BorderLayout::SOUTH
+    getContentPane.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12))
     setDefaultCloseOperation(JFrame::EXIT_ON_CLOSE)
     pack
     centerOnScreen
@@ -36,6 +34,7 @@ class FrameInRuby < JFrame
 
 
   def createConvertersPanel
+    
     labelPanel = JPanel.new(GridLayout.new(0, 1, 5, 5))
     labelPanel.add(JLabel.new("Fahrenheit:  "))
     labelPanel.add(JLabel.new("Celsius:  "))
@@ -59,12 +58,9 @@ class FrameInRuby < JFrame
      
       innerPanel = JPanel.new(GridLayout.new(1, 0, 5, 5));
       
-      innerPanel.add create_f2c_button
-      innerPanel.add create_c2f_button
-      
-      # innerPanel.add create_exit_button
-      button = create_button "Exit", Proc.new { |e| System.exit 0 }
-      innerPanel.add button
+      innerPanel.add create_button "Fahr --> Cels", f2c_action
+      innerPanel.add create_button "Cels --> Fahr", c2f_action
+      innerPanel.add create_button "Exit", lambda { |e| System.exit 0 }
       
       outerPanel = JPanel.new(BorderLayout.new());
       outerPanel.add innerPanel, BorderLayout::EAST
@@ -72,11 +68,9 @@ class FrameInRuby < JFrame
       outerPanel;
   end
 
-  def create_f2c_button
-    button  = JButton.new "Fahr --> Cels"
-    
-    button.add_action_listener do |event|
-      p self.fahrTextField
+
+  def f2c_action
+    lambda  do |event|
       text = self.fahrTextField.getText
       if text != nil and text.length > 0
         fahr = Float::parseFloat(text);
@@ -85,14 +79,11 @@ class FrameInRuby < JFrame
         self.celsTextField.setText celsText
       end
     end
-
-    button
   end
-
+  
        
-  def create_c2f_button
-    button  = JButton.new "Cels --> Fahr"
-    button.add_action_listener do |event|
+  def c2f_action
+    lambda do |event|
       text = self.celsTextField.getText
       if text != nil and text.length > 0
         cels = Float::parseFloat(text);
@@ -101,8 +92,8 @@ class FrameInRuby < JFrame
         self.fahrTextField.setText fahrText
       end
     end
-    button
   end
+  
   
   def create_button(caption, action)
     button = JButton.new caption
@@ -110,15 +101,7 @@ class FrameInRuby < JFrame
     button
   end
     
-  
 
-  def create_exit_button
-    button = JButton.new "Exit"
-    button.add_action_listener { |e| System.exit 0 }
-    button
-  end
-  
-  
   def centerOnScreen
     screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     componentSize = getSize()
