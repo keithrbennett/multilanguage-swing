@@ -8,6 +8,8 @@ import java.awt.BorderLayout
 import java.awt.GridLayout
 import java.awt.Toolkit
 
+import javax.swing.AbstractAction
+import javax.swing.Action
 import javax.swing.JButton
 import javax.swing.JFrame
 import javax.swing.JLabel
@@ -15,6 +17,24 @@ import javax.swing.JPanel
 import javax.swing.JTextField
 
 import javax.swing.BorderFactory
+
+
+class SwingAction < AbstractAction
+  
+  attr_accessor :code_block
+  
+  def initialize(code_block, name, options=nil)
+    super name
+    self.code_block = code_block
+    options.each { |key, value| putValue key, value } if options
+  end
+  
+  def actionPerformed(action_event)
+    code_block.call action_event
+  end
+end
+
+  
 
 
 class FrameInRuby < JFrame
@@ -55,13 +75,23 @@ class FrameInRuby < JFrame
   end
   
   
-  def createButtonsPanel
+  def create_actions
+    self.f2c_action  = SwingAction.new f2c_action_block, "Fahr --> Cels"
+    self.c2f_action  = SwingAction.new c2f_action_block, "Cels --> Fahr"
+    self.exit_action = SwingAction.new exit_action_block, "Exit"
+  end
      
-      innerPanel = JPanel.new(GridLayout.new(1, 0, 5, 5));
+    
+  
+  def createButtonsPanel
+    
+    create_actions
+     
+    innerPanel = JPanel.new(GridLayout.new(1, 0, 5, 5));
       
-      innerPanel.add create_button "Fahr --> Cels", f2c_action
-      innerPanel.add create_button "Cels --> Fahr", c2f_action
-      innerPanel.add create_button "Exit",          exit_action
+      innerPanel.add JButton.new f2c_action
+      innerPanel.add JButton.new c2f_action
+      innerPanel.add JButton.new exit_action
       
       outerPanel = JPanel.new(BorderLayout.new());
       outerPanel.add innerPanel, BorderLayout::EAST
@@ -70,7 +100,7 @@ class FrameInRuby < JFrame
   end
 
 
-  def f2c_action
+  def f2c_action_block
     lambda  do |event|
       text = self.fahrTextField.getText
       if text != nil and text.length > 0
@@ -83,7 +113,7 @@ class FrameInRuby < JFrame
   end
   
        
-  def c2f_action
+  def c2f_action_block
     lambda do |event|
       text = self.celsTextField.getText
       if text != nil and text.length > 0
@@ -96,18 +126,11 @@ class FrameInRuby < JFrame
   end
   
   
-  def exit_action
+  def exit_action_block
     lambda { |event| System.exit 0 }
   end
   
   
-  def create_button(caption, action)
-    button = JButton.new caption
-    button.add_action_listener &action
-    button
-  end
-    
-
   def centerOnScreen
     screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     componentSize = getSize()
@@ -116,22 +139,8 @@ class FrameInRuby < JFrame
     setLocation(new_x, new_y);
   end
   
-  
-  # def create_action(code_block, name, options_hash=nil)
-  #   
-  #   action = AbstractAction.new
-  #   options_hash.each { | key, value | action.putValue(key.to_s, value) }
-  #   action.setValue Action.NAME, name
-  #   
-  #   def action.actionPerformed
-  #     &code_block
-  #   end
-  # end
-
-    
-  
-  
-  
 end
+
+
 
 FrameInRuby.new.setVisible true
