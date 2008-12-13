@@ -19,7 +19,8 @@ import javax.swing.BorderFactory
 
 class FrameInRuby < JFrame
 
-  attr_accessor :fahrTextField, :celsTextField
+  attr_accessor :fahrTextField, :celsTextField, :f2c_action, :c2f_action, :exit_action
+  
   
 
   def initialize
@@ -60,7 +61,7 @@ class FrameInRuby < JFrame
       
       innerPanel.add create_button "Fahr --> Cels", f2c_action
       innerPanel.add create_button "Cels --> Fahr", c2f_action
-      innerPanel.add create_button "Exit", lambda { |e| System.exit 0 }
+      innerPanel.add create_button "Exit",          exit_action
       
       outerPanel = JPanel.new(BorderLayout.new());
       outerPanel.add innerPanel, BorderLayout::EAST
@@ -95,6 +96,11 @@ class FrameInRuby < JFrame
   end
   
   
+  def exit_action
+    lambda { |event| System.exit 0 }
+  end
+  
+  
   def create_button(caption, action)
     button = JButton.new caption
     button.add_action_listener &action
@@ -109,6 +115,22 @@ class FrameInRuby < JFrame
     new_y = (screenSize.getHeight() - componentSize.getHeight()) / 2;
     setLocation(new_x, new_y);
   end
+  
+  
+  # def create_action(code_block, name, options_hash=nil)
+  #   
+  #   action = AbstractAction.new
+  #   options_hash.each { | key, value | action.putValue(key.to_s, value) }
+  #   action.setValue Action.NAME, name
+  #   
+  #   def action.actionPerformed
+  #     &code_block
+  #   end
+  # end
+
+    
+  
+  
   
 end
 
