@@ -19,17 +19,18 @@ import javax.swing.JTextField
 import javax.swing.BorderFactory
 
 require 'SwingAction'
+require 'SimpleDocumentListener'
 
 
 class FrameInRuby < JFrame
 
-  attr_accessor :fahrTextField, :celsTextField, :f2c_action, :c2f_action, :exit_action
+  attr_accessor :fahr_text_field, :cels_text_field, :f2c_action, :c2f_action, :exit_action
   
 
   def initialize
     super "Fahrenheit <--> Celsius Converter"
-    getContentPane.add createConvertersPanel, BorderLayout::CENTER
-    getContentPane.add createButtonsPanel,    BorderLayout::SOUTH
+    getContentPane.add create_converters_panel, BorderLayout::CENTER
+    getContentPane.add create_buttons_panel,    BorderLayout::SOUTH
     setJMenuBar create_menu_bar
     getContentPane.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12))
     setDefaultCloseOperation(JFrame::EXIT_ON_CLOSE)
@@ -38,18 +39,21 @@ class FrameInRuby < JFrame
   end
 
 
+
   def create_text_fields
-    self.fahrTextField = JTextField.new(15);
-    self.celsTextField = JTextField.new(15);
+    self.fahr_text_field = JTextField.new(15);
+    self.cels_text_field = JTextField.new(15);
 
     tooltip_text = "Input a temperature"
-    self.fahrTextField.setToolTipText tooltip_text
-    self.celsTextField.setToolTipText tooltip_text
+    fahr_text_field.setToolTipText tooltip_text
+    cels_text_field.setToolTipText tooltip_text
+    
+    
   end
   
 
 
-  def createConvertersPanel
+  def create_converters_panel
     
     labelPanel = JPanel.new(GridLayout.new(0, 1, 5, 5))
     labelPanel.add(JLabel.new("Fahrenheit:  "))
@@ -58,15 +62,15 @@ class FrameInRuby < JFrame
     create_text_fields
 
     textFieldPanel = JPanel.new(GridLayout.new(0, 1, 5, 5));
-    textFieldPanel.add(fahrTextField);
-    textFieldPanel.add(celsTextField);
+    textFieldPanel.add(fahr_text_field);
+    textFieldPanel.add(cels_text_field);
 
     panel = JPanel.new(BorderLayout.new());
     panel.add(labelPanel, BorderLayout::WEST);
     panel.add(textFieldPanel, BorderLayout::CENTER);
-
     panel
   end
+  
   
   
   def create_actions
@@ -81,6 +85,7 @@ class FrameInRuby < JFrame
 
   end
      
+    
     
   def create_menu_bar
     
@@ -100,7 +105,7 @@ class FrameInRuby < JFrame
   
 
   
-  def createButtonsPanel
+  def create_buttons_panel
     
     create_actions
      
@@ -120,13 +125,13 @@ class FrameInRuby < JFrame
 
   def f2c_action_block
     lambda  do |event|
-      text = self.fahrTextField.getText
+      text = fahr_text_field.getText
 
       if text != nil and text.length > 0
         fahr = Double::parseDouble(text);
         cels = (fahr - 32.0) * 5.0 / 9.0;
-        celsText = Double::toString(cels)
-        self.celsTextField.setText celsText
+        cels_text = Double::toString(cels)
+        cels_text_field.setText cels_text
       end
     end
   end
@@ -134,13 +139,14 @@ class FrameInRuby < JFrame
        
   def c2f_action_block
     lambda do |event|
-      text = self.celsTextField.getText
+      text = cels_text_field.getText
   
       if text != nil and text.length > 0
         cels = Double::parseDouble(text);
         fahr = (cels * 9.0 / 5.0) + 32.0
-        fahrText = Double::toString(fahr)
-        self.fahrTextField.setText fahrText
+        
+        fahr_text = Double::toString(fahr)
+        fahr_text_field.setText fahr_text
       end
     end
   end
