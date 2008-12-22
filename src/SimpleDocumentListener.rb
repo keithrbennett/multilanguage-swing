@@ -14,7 +14,7 @@ class SimpleDocumentListener
   attr_accessor :code_block
   
   def initialize(code_block)
-    this.code_block = code_block
+    self.code_block = code_block
   end
   
   def changedUpdate(event)
