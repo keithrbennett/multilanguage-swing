@@ -41,6 +41,21 @@ class FrameInRuby < JFrame
   end
 
 
+  def valid_float_string?(str)
+  
+    is_valid = true
+  
+    begin
+      Float(str)
+    rescue(ArgumentError)
+      is_valid = false
+    end
+    
+    is_valid
+  end
+  
+    
+
 
   def create_text_fields
 
@@ -52,11 +67,11 @@ class FrameInRuby < JFrame
     cels_text_field.setToolTipText tooltip_text
     
     f2c_enabler = lambda {
-      f2c_action.setEnabled fahr_text_field.getText.length > 0
+      f2c_action.setEnabled valid_float_string?(fahr_text_field.getText)
     }
     
     c2f_enabler = lambda {
-      c2f_action.setEnabled cels_text_field.getText.length > 0
+      c2f_action.setEnabled valid_float_string?(cels_text_field.getText)
     }
     
     fahr_text_field.getDocument.addDocumentListener SimpleDocumentListener.new f2c_enabler
