@@ -24,7 +24,9 @@ require 'SimpleDocumentListener'
 
 class FrameInRuby < JFrame
 
-  attr_accessor :fahr_text_field, :cels_text_field, :f2c_action, :c2f_action, :exit_action
+  attr_accessor :fahr_text_field, :cels_text_field, 
+      :f2c_action, :c2f_action, :exit_action,
+      :f2c_enabler, :c2f_enabler
   
 
   def initialize
@@ -41,6 +43,7 @@ class FrameInRuby < JFrame
 
 
   def create_text_fields
+
     self.fahr_text_field = JTextField.new(15);
     self.cels_text_field = JTextField.new(15);
 
@@ -48,6 +51,16 @@ class FrameInRuby < JFrame
     fahr_text_field.setToolTipText tooltip_text
     cels_text_field.setToolTipText tooltip_text
     
+    f2c_enabler = lambda {
+      f2c_action.setEnabled fahr_text_field.getText.length > 0
+    }
+    
+    c2f_enabler = lambda {
+      c2f_action.setEnabled cels_text_field.getText.length > 0
+    }
+    
+    fahr_text_field.getDocument.addDocumentListener SimpleDocumentListener.new f2c_enabler
+    cels_text_field.getDocument.addDocumentListener SimpleDocumentListener.new c2f_enabler
     
   end
   
@@ -76,9 +89,11 @@ class FrameInRuby < JFrame
   def create_actions
     self.f2c_action  = SwingAction.new f2c_action_block, "Fahr --> Cels",
         Action::SHORT_DESCRIPTION => "Convert from Fahrenheit to Celsius"
+    f2c_action.setEnabled false
         
     self.c2f_action  = SwingAction.new c2f_action_block, "Cels --> Fahr",
         Action::SHORT_DESCRIPTION => "Convert from Celsius to Fahrenheit"
+    c2f_action.setEnabled false
 
     self.exit_action = SwingAction.new exit_action_block, "Exit",
         Action::SHORT_DESCRIPTION => "Exit this program"
@@ -111,9 +126,9 @@ class FrameInRuby < JFrame
      
     innerPanel = JPanel.new(GridLayout.new(1, 0, 5, 5))
 
-    innerPanel.add JButton.new f2c_action
-    innerPanel.add JButton.new c2f_action
-    innerPanel.add JButton.new exit_action
+    innerPanel.add(JButton.new f2c_action)
+    innerPanel.add(JButton.new c2f_action)
+    innerPanel.add(JButton.new exit_action)
       
     outerPanel = JPanel.new(BorderLayout.new())
     outerPanel.add innerPanel, BorderLayout::EAST
