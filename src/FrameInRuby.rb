@@ -25,7 +25,7 @@ require 'SimpleDocumentListener'
 class FrameInRuby < JFrame
 
   attr_accessor :fahr_text_field, :cels_text_field, 
-      :f2c_action, :c2f_action, :exit_action,
+      :f2c_action, :c2f_action, :clear_action, :exit_action,
       :f2c_enabler, :c2f_enabler
   
 
@@ -113,6 +113,9 @@ class FrameInRuby < JFrame
     self.exit_action = SwingAction.new exit_action_block, "Exit",
         Action::SHORT_DESCRIPTION => "Exit this program"
 
+    self.clear_action = SwingAction.new clear_action_block, "Clear",
+            Action::SHORT_DESCRIPTION => "Reset to empty the temperature fields"
+            
   end
      
     
@@ -143,6 +146,7 @@ class FrameInRuby < JFrame
 
     innerPanel.add(JButton.new f2c_action)
     innerPanel.add(JButton.new c2f_action)
+    innerPanel.add(JButton.new clear_action)
     innerPanel.add(JButton.new exit_action)
       
     outerPanel = JPanel.new(BorderLayout.new())
@@ -178,6 +182,14 @@ class FrameInRuby < JFrame
         fahr_text = Double::toString(fahr)
         fahr_text_field.setText fahr_text
       end
+    end
+  end
+  
+
+  def clear_action_block
+    lambda do |event|
+      fahr_text_field.setText ''
+      cels_text_field.setText ''
     end
   end
   
