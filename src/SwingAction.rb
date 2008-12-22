@@ -9,7 +9,6 @@ class SwingAction < AbstractAction
   end
   
   def actionPerformed(action_event)
-    p code_block
     code_block.call action_event
   end
 end
