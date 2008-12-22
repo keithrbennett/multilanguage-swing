@@ -6,8 +6,12 @@ import java.awt.BorderLayout
 import java.awt.GridLayout
 import java.awt.Toolkit
 
+import java.awt.Event
+import java.awt.event.KeyEvent
+
 import javax.swing.AbstractAction
 import javax.swing.Action
+import javax.swing.BorderFactory
 import javax.swing.JButton
 import javax.swing.JFrame
 import javax.swing.JLabel
@@ -15,8 +19,7 @@ import javax.swing.JMenu
 import javax.swing.JMenuBar
 import javax.swing.JPanel
 import javax.swing.JTextField
-
-import javax.swing.BorderFactory
+import javax.swing.KeyStroke
 
 require 'SwingAction'
 require 'SimpleDocumentListener'
@@ -103,18 +106,25 @@ class FrameInRuby < JFrame
   
   def create_actions
     self.f2c_action  = SwingAction.new f2c_action_block, "Fahr --> Cels",
-        Action::SHORT_DESCRIPTION => "Convert from Fahrenheit to Celsius"
+        Action::SHORT_DESCRIPTION => "Convert from Fahrenheit to Celsius",
+        Action::ACCELERATOR_KEY => KeyStroke.getKeyStroke(KeyEvent::VK_S, Event::CTRL_MASK)
+        
     f2c_action.setEnabled false
         
     self.c2f_action  = SwingAction.new c2f_action_block, "Cels --> Fahr",
-        Action::SHORT_DESCRIPTION => "Convert from Celsius to Fahrenheit"
+        Action::SHORT_DESCRIPTION => "Convert from Celsius to Fahrenheit",
+        Action::ACCELERATOR_KEY => KeyStroke.getKeyStroke(KeyEvent::VK_T, Event::CTRL_MASK)
+        
     c2f_action.setEnabled false
 
     self.exit_action = SwingAction.new exit_action_block, "Exit",
-        Action::SHORT_DESCRIPTION => "Exit this program"
-
+        Action::SHORT_DESCRIPTION => "Exit this program",
+        Action::ACCELERATOR_KEY => KeyStroke.getKeyStroke(KeyEvent::VK_X, Event::CTRL_MASK)
+        
     self.clear_action = SwingAction.new clear_action_block, "Clear",
-            Action::SHORT_DESCRIPTION => "Reset to empty the temperature fields"
+        Action::SHORT_DESCRIPTION => "Reset to empty the temperature fields",
+        Action::ACCELERATOR_KEY => KeyStroke.getKeyStroke(KeyEvent::VK_L, Event::CTRL_MASK)
+        
             
   end
      
