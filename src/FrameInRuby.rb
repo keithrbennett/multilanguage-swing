@@ -128,6 +128,10 @@ class FrameInRuby < JFrame
     file_menu.add exit_action
     menubar.add file_menu
     
+    edit_menu = JMenu.new "Edit"
+    edit_menu.add clear_action
+    menubar.add edit_menu
+    
     convert_menu = JMenu.new "Convert"
     convert_menu.add f2c_action
     convert_menu.add c2f_action
