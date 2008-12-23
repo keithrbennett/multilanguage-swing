@@ -1,5 +1,3 @@
-// TODO: Install document listeners.
-
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -33,13 +31,10 @@ public class FrameInJava extends JFrame {
     private JTextField fahrTextField = new JTextField(15);
     private JTextField celsTextField = new JTextField(15);
 
-    private AbstractAction f2c_action;
-    private AbstractAction c2f_action;
-    private AbstractAction clear_action;
-    private AbstractAction exit_action;
-
-    //    private DocumentListener f2c_enabler;
-    //private DocumentListener c2f_enabler;
+    private AbstractAction f2cAction;
+    private AbstractAction c2fAction;
+    private AbstractAction clearAction;
+    private AbstractAction exitAction;
 
 
     public FrameInJava() {
@@ -56,37 +51,41 @@ public class FrameInJava extends JFrame {
     }
 
 
+
     private JMenuBar createMenuBar() {
     
 	JMenuBar menubar = new JMenuBar();
     
 	JMenu file_menu = new JMenu("File");
-	file_menu.add(exit_action);
+	file_menu.add(exitAction);
 	menubar.add(file_menu);
     
 	JMenu edit_menu = new JMenu("Edit");
-	edit_menu.add(clear_action);
+	edit_menu.add(clearAction);
 	menubar.add(edit_menu);
     
 	JMenu convert_menu = new JMenu("Convert");
-	convert_menu.add(f2c_action);
-	convert_menu.add(c2f_action);
+	convert_menu.add(f2cAction);
+	convert_menu.add(c2fAction);
 	menubar.add(convert_menu);
     
 	return menubar;
     }
 
 
+
     private void initActions() {
 
-	f2c_action    = new F2CAction();
-	c2f_action    = new C2FAction();
-	clear_action  = new ClearAction();
-	exit_action   = new ExitAction();
+	f2cAction    = new F2CAction();
+	c2fAction    = new C2FAction();
+	clearAction  = new ClearAction();
+	exitAction   = new ExitAction();
 
-	f2c_action.setEnabled(false);
-	c2f_action.setEnabled(false);
+	f2cAction.setEnabled(false);
+	c2fAction.setEnabled(false);
     }
+
+
 
     private JPanel createConvertersPanel() {
 
@@ -104,13 +103,13 @@ public class FrameInJava extends JFrame {
 
 	fahrTextField.getDocument().addDocumentListener(new SimpleDocumentListener() {
 	    public void handleDocumentEvent(DocumentEvent event) {
-		f2c_action.setEnabled(floatStringIsValid(fahrTextField.getText()));
+		f2cAction.setEnabled(floatStringIsValid(fahrTextField.getText()));
 	    }
 	});
 
 	celsTextField.getDocument().addDocumentListener(new SimpleDocumentListener() {
 	    public void handleDocumentEvent(DocumentEvent event) {
-		c2f_action.setEnabled(floatStringIsValid(celsTextField.getText()));
+		c2fAction.setEnabled(floatStringIsValid(celsTextField.getText()));
 	    }
 	});
 
@@ -124,10 +123,10 @@ public class FrameInJava extends JFrame {
 
     private JPanel createButtonsPanel() {
         JPanel innerPanel = new JPanel(new GridLayout(1, 0, 5, 5));
-        innerPanel.add(new JButton(f2c_action));
-        innerPanel.add(new JButton(c2f_action));
-        innerPanel.add(new JButton(clear_action));
-        innerPanel.add(new JButton(exit_action));
+        innerPanel.add(new JButton(f2cAction));
+        innerPanel.add(new JButton(c2fAction));
+        innerPanel.add(new JButton(clearAction));
+        innerPanel.add(new JButton(exitAction));
 
         JPanel outerPanel = new JPanel(new BorderLayout());
         outerPanel.add(innerPanel, BorderLayout.EAST);
