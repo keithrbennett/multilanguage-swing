@@ -1,6 +1,8 @@
+import javax.swing.Action;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import javax.swing.event.DocumentListener;
 
 
@@ -9,10 +11,10 @@ public class FrameInJava extends JFrame {
     private JTextField fahrTextField = new JTextField(15);
     private JTextField celsTextField = new JTextField(15);
 
-    private Action f2c_action    = new F2CAction();
-    private Action c2f_action    = new C2FAction();
-    private Action clear_action  = new ClearAction();
-    private Action exit_action   = new ExitAction();;
+    private AbstractAction f2c_action    = new F2CAction();
+    private AbstractAction c2f_action    = new C2FAction();
+    private AbstractAction clear_action  = new ClearAction();
+    private AbstractAction exit_action   = new ExitAction();;
 
     private DocumentListener f2c_enabler;
     private DocumentListener c2f_enabler;
@@ -88,6 +90,10 @@ public class FrameInJava extends JFrame {
 
         F2CAction() {
             super("Fahr -> Cels");
+	    putValue(Action.SHORT_DESCRIPTION, "Convert from Fahrenheit to Celsius");
+	    putValue(Action.ACCELERATOR_KEY,
+		     KeyStroke.getKeyStroke(KeyEvent.VK_S, Event.CTRL_MASK));
+
         }
 
         public void actionPerformed(ActionEvent event) {
@@ -107,6 +113,9 @@ public class FrameInJava extends JFrame {
 
         C2FAction() {
             super("Cels -> Fahr");
+	    putValue(Action.SHORT_DESCRIPTION, "Convert from Celsius to Fahrenheit");
+	    putValue(Action.ACCELERATOR_KEY,
+		     KeyStroke.getKeyStroke(KeyEvent.VK_T, Event.CTRL_MASK));
         }
 
         public void actionPerformed(ActionEvent event) {
@@ -126,6 +135,9 @@ public class FrameInJava extends JFrame {
 
         ClearAction() {
             super("Clear");
+	    putValue(Action.SHORT_DESCRIPTION, "Clear the temperature text fields");
+	    putValue(Action.ACCELERATOR_KEY,
+		     KeyStroke.getKeyStroke(KeyEvent.VK_L, Event.CTRL_MASK));
         }
 
         public void actionPerformed(ActionEvent event) {
@@ -139,6 +151,9 @@ public class FrameInJava extends JFrame {
 
         ExitAction() {
             super("Exit");
+	    putValue(Action.SHORT_DESCRIPTION, "Exit this program");
+	    putValue(Action.ACCELERATOR_KEY,
+		     KeyStroke.getKeyStroke(KeyEvent.VK_X, Event.CTRL_MASK));
         }
 
         public void actionPerformed(ActionEvent event) {
