@@ -1,6 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import javax.swing.event.DocumentListener;
 
 
 public class FrameInJava extends JFrame {
@@ -8,12 +9,21 @@ public class FrameInJava extends JFrame {
     private JTextField fahrTextField = new JTextField(15);
     private JTextField celsTextField = new JTextField(15);
 
-    
+    private Action f2c_action    = new F2CAction();
+    private Action c2f_action    = new C2FAction();
+    private Action clear_action  = new ClearAction();
+    private Action exit_action   = new ExitAction();;
+
+    private DocumentListener f2c_enabler;
+    private DocumentListener c2f_enabler;
+
+
     public FrameInJava() {
         super("Fahrenheit <--> Celsius Converter");
         getContentPane().add(createConvertersPanel(), BorderLayout.CENTER);
         getContentPane().add(createButtonsPanel(),    BorderLayout.SOUTH);
         ((JPanel) getContentPane()).setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
+	setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         pack();
         centerOnScreen();
     }
@@ -29,6 +39,10 @@ public class FrameInJava extends JFrame {
         textFieldPanel.add(fahrTextField);
         textFieldPanel.add(celsTextField);
 
+	String tooltip_text = "Input a temperature";
+	fahrTextField.setToolTipText(tooltip_text);
+	celsTextField.setToolTipText(tooltip_text);
+
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(labelPanel, BorderLayout.WEST);
         panel.add(textFieldPanel, BorderLayout.CENTER);
@@ -39,9 +53,10 @@ public class FrameInJava extends JFrame {
 
     private JPanel createButtonsPanel() {
         JPanel innerPanel = new JPanel(new GridLayout(1, 0, 5, 5));
-        innerPanel.add(new JButton(new F2CAction()));
-        innerPanel.add(new JButton(new C2FAction()));
-        innerPanel.add(new JButton(new ExitAction()));
+        innerPanel.add(new JButton(f2c_action));
+        innerPanel.add(new JButton(c2f_action));
+        innerPanel.add(new JButton(clear_action));
+        innerPanel.add(new JButton(exit_action));
 
         JPanel outerPanel = new JPanel(new BorderLayout());
         outerPanel.add(innerPanel, BorderLayout.EAST);
@@ -50,8 +65,22 @@ public class FrameInJava extends JFrame {
     }
     
 
+    private boolean float_string_is_valid(String s) {
+	
+	boolean valid = true;
+
+	try {
+	    new Double(s);
+	} catch(NumberFormatException e) {
+	    valid = false;
+	}
+
+	return valid;
+    }
+
+
     public static void main(String [] args) {
-        new FrameInJava().setVisible(true);
+         new FrameInJava().setVisible(true);
     }
 
 
@@ -89,6 +118,19 @@ public class FrameInJava extends JFrame {
                 String fahrText = Double.toString(fahr);
                 fahrTextField.setText(fahrText);
             }
+        }
+    }
+
+
+    private class ClearAction extends AbstractAction {
+
+        ClearAction() {
+            super("Clear");
+        }
+
+        public void actionPerformed(ActionEvent event) {
+            fahrTextField.setText("");
+            celsTextField.setText("");
         }
     }
 
