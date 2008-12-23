@@ -50,12 +50,12 @@ class FrameInRuby < JFrame
   end
 
 
-  def valid_float_string?(str)
+  def float_string_valid?(str)
   
     is_valid = true
   
     begin
-      Float(str)
+      Float(str) # convert but discard converted value
     rescue(ArgumentError)
       is_valid = false
     end
@@ -67,11 +67,11 @@ class FrameInRuby < JFrame
   def add_text_field_listeners
 
     f2c_enabler = lambda {
-      f2c_action.setEnabled valid_float_string?(fahr_text_field.getText)
+      f2c_action.setEnabled float_string_valid?(fahr_text_field.getText)
     }
     
     c2f_enabler = lambda {
-      c2f_action.setEnabled valid_float_string?(cels_text_field.getText)
+      c2f_action.setEnabled float_string_valid?(cels_text_field.getText)
     }
     
     clear_enabler = lambda {
@@ -83,8 +83,10 @@ class FrameInRuby < JFrame
       clear_action.setEnabled should_enable
     }
 
-    fahr_text_field.getDocument.addDocumentListener SimpleDocumentListener.new f2c_enabler
-    cels_text_field.getDocument.addDocumentListener SimpleDocumentListener.new c2f_enabler
+    fahr_text_field.getDocument.addDocumentListener(
+        SimpleDocumentListener.new f2c_enabler)
+    cels_text_field.getDocument.addDocumentListener(
+        SimpleDocumentListener.new c2f_enabler)
 
     clear_document_listener = SimpleDocumentListener.new clear_enabler
     fahr_text_field.getDocument.addDocumentListener clear_document_listener
@@ -131,23 +133,27 @@ class FrameInRuby < JFrame
   def create_actions
     self.f2c_action  = SwingAction.new f2c_action_block, "Fahr --> Cels",
         Action::SHORT_DESCRIPTION => "Convert from Fahrenheit to Celsius",
-        Action::ACCELERATOR_KEY => KeyStroke.getKeyStroke(KeyEvent::VK_S, Event::CTRL_MASK)
+        Action::ACCELERATOR_KEY => 
+            KeyStroke.getKeyStroke(KeyEvent::VK_S, Event::CTRL_MASK)
         
     f2c_action.setEnabled false
         
     self.c2f_action  = SwingAction.new c2f_action_block, "Cels --> Fahr",
         Action::SHORT_DESCRIPTION => "Convert from Celsius to Fahrenheit",
-        Action::ACCELERATOR_KEY => KeyStroke.getKeyStroke(KeyEvent::VK_T, Event::CTRL_MASK)
+        Action::ACCELERATOR_KEY => 
+            KeyStroke.getKeyStroke(KeyEvent::VK_T, Event::CTRL_MASK)
         
     c2f_action.setEnabled false
 
     self.exit_action = SwingAction.new exit_action_block, "Exit",
         Action::SHORT_DESCRIPTION => "Exit this program",
-        Action::ACCELERATOR_KEY => KeyStroke.getKeyStroke(KeyEvent::VK_X, Event::CTRL_MASK)
+        Action::ACCELERATOR_KEY => 
+            KeyStroke.getKeyStroke(KeyEvent::VK_X, Event::CTRL_MASK)
         
     self.clear_action = SwingAction.new clear_action_block, "Clear",
         Action::SHORT_DESCRIPTION => "Reset to empty the temperature fields",
-        Action::ACCELERATOR_KEY => KeyStroke.getKeyStroke(KeyEvent::VK_L, Event::CTRL_MASK)
+        Action::ACCELERATOR_KEY => 
+            KeyStroke.getKeyStroke(KeyEvent::VK_L, Event::CTRL_MASK)
     clear_action.setEnabled false
         
             
