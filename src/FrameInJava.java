@@ -1,3 +1,7 @@
+// TODO: Fix imports.
+// TODO: Install menus.
+// TODO: Install document listeners.
+
 import javax.swing.Action;
 import javax.swing.*;
 import java.awt.*;
@@ -24,12 +28,36 @@ public class FrameInJava extends JFrame {
         super("Fahrenheit <--> Celsius Converter");
         getContentPane().add(createConvertersPanel(), BorderLayout.CENTER);
         getContentPane().add(createButtonsPanel(),    BorderLayout.SOUTH);
+	setJMenuBar(createMenuBar());
         ((JPanel) getContentPane()).setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
 	setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         pack();
         centerOnScreen();
     }
 
+
+    private JMenuBar createMenuBar() {
+    
+	JMenuBar menubar = new JMenuBar();
+    
+	JMenu file_menu = new JMenu("File");
+	file_menu.add(exit_action);
+	menubar.add(file_menu);
+    
+	JMenu edit_menu = new JMenu("Edit");
+	edit_menu.add(clear_action);
+	menubar.add(edit_menu);
+    
+	JMenu convert_menu = new JMenu("Convert");
+	convert_menu.add(f2c_action);
+	convert_menu.add(c2f_action);
+	menubar.add(convert_menu);
+    
+	return menubar;
+    }
+
+
+  
 
     private JPanel createConvertersPanel() {
 
