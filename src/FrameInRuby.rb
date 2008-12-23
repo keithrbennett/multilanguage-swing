@@ -1,12 +1,18 @@
 require 'java'
 
+# Note: Double needed here even though it is a java.lang class.
+# TODO: Verify that java.lang classes need to be imported.
 import java.lang.Double
 
+
+# Note: Dimension import not needed here as it was in the Java program
+# because it is never referenced by name.
+
 import java.awt.BorderLayout
+import java.awt.Event
 import java.awt.GridLayout
 import java.awt.Toolkit
 
-import java.awt.Event
 import java.awt.event.KeyEvent
 
 import javax.swing.AbstractAction
@@ -28,8 +34,7 @@ require 'SimpleDocumentListener'
 class FrameInRuby < JFrame
 
   attr_accessor :fahr_text_field, :cels_text_field, 
-      :f2c_action, :c2f_action, :clear_action, :exit_action,
-      :f2c_enabler, :c2f_enabler
+      :f2c_action, :c2f_action, :clear_action, :exit_action
   
 
   def initialize
@@ -59,6 +64,34 @@ class FrameInRuby < JFrame
   end
   
     
+  def add_text_field_listeners
+
+    f2c_enabler = lambda {
+      f2c_action.setEnabled valid_float_string?(fahr_text_field.getText)
+    }
+    
+    c2f_enabler = lambda {
+      c2f_action.setEnabled valid_float_string?(cels_text_field.getText)
+    }
+    
+    clear_enabler = lambda {
+      ctext = cels_text_field.getText
+      ftext = fahr_text_field.getText
+      should_enable =
+          (ctext && ctext.length > 0) ||
+          (ftext && ftext.length > 0)
+      clear_action.setEnabled should_enable
+    }
+
+    fahr_text_field.getDocument.addDocumentListener SimpleDocumentListener.new f2c_enabler
+    cels_text_field.getDocument.addDocumentListener SimpleDocumentListener.new c2f_enabler
+
+    clear_document_listener = SimpleDocumentListener.new clear_enabler
+    fahr_text_field.getDocument.addDocumentListener clear_document_listener
+    cels_text_field.getDocument.addDocumentListener clear_document_listener
+
+  end
+
 
 
   def create_text_fields
@@ -69,18 +102,8 @@ class FrameInRuby < JFrame
     tooltip_text = "Input a temperature"
     fahr_text_field.setToolTipText tooltip_text
     cels_text_field.setToolTipText tooltip_text
-    
-    f2c_enabler = lambda {
-      f2c_action.setEnabled valid_float_string?(fahr_text_field.getText)
-    }
-    
-    c2f_enabler = lambda {
-      c2f_action.setEnabled valid_float_string?(cels_text_field.getText)
-    }
-    
-    fahr_text_field.getDocument.addDocumentListener SimpleDocumentListener.new f2c_enabler
-    cels_text_field.getDocument.addDocumentListener SimpleDocumentListener.new c2f_enabler
-    
+  
+    add_text_field_listeners
   end
   
 
@@ -125,6 +148,7 @@ class FrameInRuby < JFrame
     self.clear_action = SwingAction.new clear_action_block, "Clear",
         Action::SHORT_DESCRIPTION => "Reset to empty the temperature fields",
         Action::ACCELERATOR_KEY => KeyStroke.getKeyStroke(KeyEvent::VK_L, Event::CTRL_MASK)
+    clear_action.setEnabled false
         
             
   end

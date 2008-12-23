@@ -10,18 +10,19 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
+import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JPanel;
 import javax.swing.JLabel;
-import javax.swing.JTextField;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
-import javax.swing.JButton;
-import javax.swing.BorderFactory;
-import javax.swing.AbstractAction;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 
+import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 
@@ -32,17 +33,18 @@ public class FrameInJava extends JFrame {
     private JTextField fahrTextField = new JTextField(15);
     private JTextField celsTextField = new JTextField(15);
 
-    private AbstractAction f2c_action    = new F2CAction();
-    private AbstractAction c2f_action    = new C2FAction();
-    private AbstractAction clear_action  = new ClearAction();
-    private AbstractAction exit_action   = new ExitAction();;
+    private AbstractAction f2c_action;
+    private AbstractAction c2f_action;
+    private AbstractAction clear_action;
+    private AbstractAction exit_action;
 
-    private DocumentListener f2c_enabler;
-    private DocumentListener c2f_enabler;
+    //    private DocumentListener f2c_enabler;
+    //private DocumentListener c2f_enabler;
 
 
     public FrameInJava() {
         super("Fahrenheit <--> Celsius Converter");
+	initActions();
         getContentPane().add(createConvertersPanel(), BorderLayout.CENTER);
         getContentPane().add(createButtonsPanel(),    BorderLayout.SOUTH);
 	setJMenuBar(createMenuBar());
@@ -75,7 +77,16 @@ public class FrameInJava extends JFrame {
     }
 
 
-  
+    private void initActions() {
+
+	f2c_action    = new F2CAction();
+	c2f_action    = new C2FAction();
+	clear_action  = new ClearAction();
+	exit_action   = new ExitAction();
+
+	f2c_action.setEnabled(false);
+	c2f_action.setEnabled(false);
+    }
 
     private JPanel createConvertersPanel() {
 
@@ -90,6 +101,18 @@ public class FrameInJava extends JFrame {
 	String tooltip_text = "Input a temperature";
 	fahrTextField.setToolTipText(tooltip_text);
 	celsTextField.setToolTipText(tooltip_text);
+
+	fahrTextField.getDocument().addDocumentListener(new SimpleDocumentListener() {
+	    public void handleDocumentEvent(DocumentEvent event) {
+		f2c_action.setEnabled(floatStringIsValid(fahrTextField.getText()));
+	    }
+	});
+
+	celsTextField.getDocument().addDocumentListener(new SimpleDocumentListener() {
+	    public void handleDocumentEvent(DocumentEvent event) {
+		c2f_action.setEnabled(floatStringIsValid(celsTextField.getText()));
+	    }
+	});
 
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(labelPanel, BorderLayout.WEST);
@@ -113,7 +136,7 @@ public class FrameInJava extends JFrame {
     }
     
 
-    private boolean float_string_is_valid(String s) {
+    private boolean floatStringIsValid(String s) {
 	
 	boolean valid = true;
 
