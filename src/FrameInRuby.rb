@@ -35,6 +35,7 @@ class FrameInRuby < JFrame
   def initialize
     super "Fahrenheit <--> Celsius Converter"
     getContentPane.add create_converters_panel, BorderLayout::CENTER
+    create_actions
     getContentPane.add create_buttons_panel,    BorderLayout::SOUTH
     setJMenuBar create_menu_bar
     getContentPane.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12))
@@ -154,8 +155,6 @@ class FrameInRuby < JFrame
   
   def create_buttons_panel
     
-    create_actions
-     
     innerPanel = JPanel.new(GridLayout.new(1, 0, 5, 5))
 
     innerPanel.add(JButton.new f2c_action)
