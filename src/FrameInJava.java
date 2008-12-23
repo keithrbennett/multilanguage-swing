@@ -83,8 +83,42 @@ public class FrameInJava extends JFrame {
 
 	f2cAction.setEnabled(false);
 	c2fAction.setEnabled(false);
+	clearAction.setEnabled(false);
     }
 
+
+    private void setupDocumentListeners() {
+
+	fahrTextField.getDocument().addDocumentListener(new SimpleDocumentListener() {
+	    public void handleDocumentEvent(DocumentEvent event) {
+		f2cAction.setEnabled(floatStringIsValid(fahrTextField.getText()));
+	    }
+	});
+
+	celsTextField.getDocument().addDocumentListener(new SimpleDocumentListener() {
+	    public void handleDocumentEvent(DocumentEvent event) {
+		c2fAction.setEnabled(floatStringIsValid(celsTextField.getText()));
+	    }
+	});
+
+	DocumentListener clearDocumentListener = new SimpleDocumentListener() {
+	    public void handleDocumentEvent(DocumentEvent event) {
+
+		String ctext = celsTextField.getText();
+		String ftext = fahrTextField.getText();
+
+		boolean should_enable =
+		    (ctext != null && ctext.length() > 0) ||
+		    (ftext != null && ftext.length() > 0);
+
+		clearAction.setEnabled(should_enable);
+	    }
+	};
+
+	fahrTextField.getDocument().addDocumentListener(clearDocumentListener);
+	celsTextField.getDocument().addDocumentListener(clearDocumentListener);
+
+    }
 
 
     private JPanel createConvertersPanel() {
@@ -101,17 +135,7 @@ public class FrameInJava extends JFrame {
 	fahrTextField.setToolTipText(tooltip_text);
 	celsTextField.setToolTipText(tooltip_text);
 
-	fahrTextField.getDocument().addDocumentListener(new SimpleDocumentListener() {
-	    public void handleDocumentEvent(DocumentEvent event) {
-		f2cAction.setEnabled(floatStringIsValid(fahrTextField.getText()));
-	    }
-	});
-
-	celsTextField.getDocument().addDocumentListener(new SimpleDocumentListener() {
-	    public void handleDocumentEvent(DocumentEvent event) {
-		c2fAction.setEnabled(floatStringIsValid(celsTextField.getText()));
-	    }
-	});
+	setupDocumentListeners();	
 
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(labelPanel, BorderLayout.WEST);
