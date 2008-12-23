@@ -1,13 +1,30 @@
-// TODO: Fix imports.
-// TODO: Install menus.
 // TODO: Install document listeners.
 
-import javax.swing.Action;
-import javax.swing.*;
-import java.awt.*;
+
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Event;
+import java.awt.GridLayout;
+import java.awt.Toolkit;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+
+import javax.swing.Action;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JLabel;
+import javax.swing.JTextField;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JButton;
+import javax.swing.BorderFactory;
+import javax.swing.AbstractAction;
+import javax.swing.KeyStroke;
+
 import javax.swing.event.DocumentListener;
+
+
 
 
 public class FrameInJava extends JFrame {
@@ -29,7 +46,8 @@ public class FrameInJava extends JFrame {
         getContentPane().add(createConvertersPanel(), BorderLayout.CENTER);
         getContentPane().add(createButtonsPanel(),    BorderLayout.SOUTH);
 	setJMenuBar(createMenuBar());
-        ((JPanel) getContentPane()).setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
+        ((JPanel) getContentPane()).setBorder
+	        (BorderFactory.createEmptyBorder(12, 12, 12, 12));
 	setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         pack();
         centerOnScreen();
