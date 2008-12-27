@@ -1,12 +1,13 @@
 require 'java'
 
-# Note: Double needed here even though it is a java.lang class.
-# TODO: Verify that java.lang classes need to be imported.
+# In Java, classes in the java.lang package do not need to be imported.
+# In JRuby, they do, so that JRuby can distinguish it from a Ruby constant.
 import java.lang.Double
 
-
-# Note: Dimension import not needed here as it was in the Java program
-# because it is never referenced by name.
+# In the Java version of the program, it was necessary to import Dimension
+# because it was needed to define the type of a variable.  In Ruby, it is
+# not necessary to specify the type of a variable's value, so we never
+# use the term 'Dimension', and there is no need to import it.
 
 import java.awt.BorderLayout
 import java.awt.Event
@@ -27,20 +28,42 @@ import javax.swing.JPanel
 import javax.swing.JTextField
 import javax.swing.KeyStroke
 
+
+# In Java, all classes specified in the same package as the file being compiled
+# will be found by the compiler without explicitly importing them.  In contrast,
+# in Ruby, we need to "require" files, even though they are in the same
+# directory as the file being interpreted.
+
 require 'SwingAction'
 require 'SimpleDocumentListener'
 
 
+# Main application frame containing menus, text fields for the temperatures,
+# and buttons.  The menu items and buttons are driven by shared actions,
+# which are disabled and enabled based on the state of the text fields.
+# 
+# Temperatures can be converted in either direction, Fahrenheit to Celsius
+# or Celsius to Fahrenheit.  The convert actions (F2C, C2F) are each enabled
+# when the respective source text field (F for F2C, C for C2F) contains text
+# that can successfully be parsed to a Double.
+#
+# The Clear action is enabled when there is any text in either of the text fields.
+
 class FrameInRuby < JFrame
 
-  attr_accessor :fahr_text_field, :cels_text_field, 
-      :f2c_action, :c2f_action, :clear_action, :exit_action
+  attr_accessor :fahr_text_field, :cels_text_field
+
+  # These actions will be shared by menu items and buttons.
+  attr_accessor :f2c_action, :c2f_action, :clear_action, :exit_action
   
 
   def initialize
     super "Fahrenheit <--> Celsius Converter"
+
+    # In Ruby, the double colon is used to refer to static members
+    # (class variables as opposed to instance variables): 
     getContentPane.add create_converters_panel, BorderLayout::CENTER
-    create_actions
+    setup_actions
     getContentPane.add create_buttons_panel,    BorderLayout::SOUTH
     setJMenuBar create_menu_bar
     getContentPane.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12))
@@ -50,21 +73,70 @@ class FrameInRuby < JFrame
   end
 
 
-  def float_string_valid?(str)
+
+  def create_text_fields
+
+    self.fahr_text_field = JTextField.new(15);
+    self.cels_text_field = JTextField.new(15);
+
+    tooltip_text = "Input a temperature"
+    fahr_text_field.setToolTipText tooltip_text
+    cels_text_field.setToolTipText tooltip_text
   
-    is_valid = true
-  
-    begin
-      Float(str) # convert but discard converted value
-    rescue(ArgumentError)
-      is_valid = false
-    end
-    
-    is_valid
+    setup_text_field_listeners
   end
   
+
+
+  def create_converters_panel
     
-  def add_text_field_listeners
+    labelPanel = JPanel.new(GridLayout.new(0, 1, 5, 5))
+    labelPanel.add(JLabel.new("Fahrenheit:  "))
+    labelPanel.add(JLabel.new("Celsius:  "))
+
+    create_text_fields
+
+    textFieldPanel = JPanel.new(GridLayout.new(0, 1, 5, 5));
+    textFieldPanel.add(fahr_text_field);
+    textFieldPanel.add(cels_text_field);
+
+    panel = JPanel.new(BorderLayout.new());
+    panel.add(labelPanel, BorderLayout::WEST);
+    panel.add(textFieldPanel, BorderLayout::CENTER);
+    panel
+  end
+  
+  
+  
+  # Creates menu bar with File, Edit, and Convert menus.
+  def create_menu_bar
+    
+    menubar = JMenuBar.new
+    
+    file_menu = JMenu.new "File"
+    file_menu.add exit_action
+    menubar.add file_menu
+    
+    edit_menu = JMenu.new "Edit"
+    edit_menu.add clear_action
+    menubar.add edit_menu
+    
+    convert_menu = JMenu.new "Convert"
+    convert_menu.add f2c_action
+    convert_menu.add c2f_action
+    menubar.add convert_menu
+    
+    menubar
+  end
+  
+
+  
+  def setup_text_field_listeners
+
+    # In Java, a separate class is required for each type
+    # of action.  In contrast, Ruby supports code blocks, lambdas, and procs.
+    # This allows us to use instances of the same SimpleDocumentListener
+    # class simply creating them with different lambdas.
 
     f2c_enabler = lambda {
       f2c_action.setEnabled float_string_valid?(fahr_text_field.getText)
@@ -96,41 +168,7 @@ class FrameInRuby < JFrame
 
 
 
-  def create_text_fields
-
-    self.fahr_text_field = JTextField.new(15);
-    self.cels_text_field = JTextField.new(15);
-
-    tooltip_text = "Input a temperature"
-    fahr_text_field.setToolTipText tooltip_text
-    cels_text_field.setToolTipText tooltip_text
-  
-    add_text_field_listeners
-  end
-  
-
-
-  def create_converters_panel
-    
-    labelPanel = JPanel.new(GridLayout.new(0, 1, 5, 5))
-    labelPanel.add(JLabel.new("Fahrenheit:  "))
-    labelPanel.add(JLabel.new("Celsius:  "))
-
-    create_text_fields
-
-    textFieldPanel = JPanel.new(GridLayout.new(0, 1, 5, 5));
-    textFieldPanel.add(fahr_text_field);
-    textFieldPanel.add(cels_text_field);
-
-    panel = JPanel.new(BorderLayout.new());
-    panel.add(labelPanel, BorderLayout::WEST);
-    panel.add(textFieldPanel, BorderLayout::CENTER);
-    panel
-  end
-  
-  
-  
-  def create_actions
+  def setup_actions
     self.f2c_action  = SwingAction.new f2c_action_block, "Fahr --> Cels",
         Action::SHORT_DESCRIPTION => "Convert from Fahrenheit to Celsius",
         Action::ACCELERATOR_KEY => 
@@ -161,28 +199,6 @@ class FrameInRuby < JFrame
      
     
     
-  def create_menu_bar
-    
-    menubar = JMenuBar.new
-    
-    file_menu = JMenu.new "File"
-    file_menu.add exit_action
-    menubar.add file_menu
-    
-    edit_menu = JMenu.new "Edit"
-    edit_menu.add clear_action
-    menubar.add edit_menu
-    
-    convert_menu = JMenu.new "Convert"
-    convert_menu.add f2c_action
-    convert_menu.add c2f_action
-    menubar.add convert_menu
-    
-    menubar
-  end
-  
-
-  
   def create_buttons_panel
     
     innerPanel = JPanel.new(GridLayout.new(1, 0, 5, 5))
@@ -242,6 +258,28 @@ class FrameInRuby < JFrame
   end
   
   
+  # A nice touch in Ruby is the ability to name functions with names
+  # that end in "?" to indicate that they return a boolean value.
+
+  def float_string_valid?(str)
+  
+    is_valid = true
+  
+    begin
+      Float(str) # convert but discard converted value
+    rescue(ArgumentError)
+      is_valid = false
+    end
+    
+    is_valid
+  end
+  
+
+  # Centers the window on the screen based on the graphical information
+  # reported by the java.awt.Toolkit.  Note that in some cases, such as
+  # use of multiple nonmirrored displays, the position may be odd, since
+  # the toolkit may report the sum of all display space across all available
+  # displays.
   def centerOnScreen
     screenSize = Toolkit.getDefaultToolkit().getScreenSize()
     componentSize = getSize()

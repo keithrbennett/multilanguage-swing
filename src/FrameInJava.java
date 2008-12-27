@@ -1,3 +1,9 @@
+/**
+ * FrameInJava - Sample Swing Application, written in Java, that does
+ * Fahrenheit <--> Celsius Temperature Conversion
+ *
+ * Copyright 2008, Bennett Business Solutions, Inc.
+ */
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -24,13 +30,24 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 
-
-
+/**
+ * Main application frame containing menus, text fields for the temperatures,
+ * and buttons.  The menu items and buttons are driven by shared actions,
+ * which are disabled and enabled based on the state of the text fields.
+ * 
+ * Temperatures can be converted in either direction, Fahrenheit to Celsius
+ * or Celsius to Fahrenheit.  The convert actions (F2C, C2F) are each enabled
+ * when the respective source text field (F for F2C, C for C2F) contains text
+ * that can successfully be parsed to a Double.
+ *
+ * The Clear action is enabled when there is any text in either of the text fields.
+ */
 public class FrameInJava extends JFrame {
 
     private JTextField fahrTextField = new JTextField(15);
     private JTextField celsTextField = new JTextField(15);
 
+    // These actions will be shared by menu items and buttons.
     private AbstractAction f2cAction;
     private AbstractAction c2fAction;
     private AbstractAction clearAction;
@@ -51,7 +68,47 @@ public class FrameInJava extends JFrame {
     }
 
 
+    
+    private void createTextFields() {
 
+	fahrTextField = new JTextField(15);
+	celsTextField = new JTextField(15);
+
+	String tooltip_text = "Input a temperature";
+	fahrTextField.setToolTipText(tooltip_text);
+	celsTextField.setToolTipText(tooltip_text);
+    }
+
+
+    /**
+     * Creates the panel containing the Fahrenheit and Celsius labels
+     * and text fields.
+     */
+    private JPanel createConvertersPanel() {
+
+        JPanel labelPanel = new JPanel(new GridLayout(0, 1, 5, 5));
+        labelPanel.add(new JLabel("Fahrenheit:  "));
+        labelPanel.add(new JLabel("Celsius:  "));
+
+        JPanel textFieldPanel = new JPanel(new GridLayout(0, 1, 5, 5));
+	createTextFields();
+        textFieldPanel.add(fahrTextField);
+        textFieldPanel.add(celsTextField);
+
+	setupDocumentListeners();	
+
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.add(labelPanel, BorderLayout.WEST);
+        panel.add(textFieldPanel, BorderLayout.CENTER);
+
+        return panel;
+    }
+
+
+
+    /**
+     * Creates menu bar with File, Edit, and Convert menus.
+     */
     private JMenuBar createMenuBar() {
     
 	JMenuBar menubar = new JMenuBar();
@@ -74,6 +131,9 @@ public class FrameInJava extends JFrame {
 
 
 
+    /**
+     * Initialize and set enabled states for the actions.
+     */
     private void initActions() {
 
 	f2cAction    = new F2CAction();
@@ -81,26 +141,45 @@ public class FrameInJava extends JFrame {
 	clearAction  = new ClearAction();
 	exitAction   = new ExitAction();
 
+        // The initial state of the form will have nothing in the text fields.
+        // Therefore, the conversion and clear actions are inappropriate and
+	// are set to disabled here.
+	//
+	// If the logic were more complex, and the desired enabled state could
+	// not be known at compile time, then we would find a way to call the
+	// same logic as the DocumentListener does, possibly by calling a
+	// DocumentListener method with null as the event parameter.
 	f2cAction.setEnabled(false);
 	c2fAction.setEnabled(false);
 	clearAction.setEnabled(false);
     }
 
 
+
+    /**
+     * Sets up text fields so that the actions are enabled only when appropriate.
+     */
     private void setupDocumentListeners() {
 
+	// Will result in the F2C action being enabled only when the field's
+	// text can be parsed to a floating point number.
 	fahrTextField.getDocument().addDocumentListener(new SimpleDocumentListener() {
 	    public void handleDocumentEvent(DocumentEvent event) {
 		f2cAction.setEnabled(floatStringIsValid(fahrTextField.getText()));
 	    }
 	});
 
+	// Will result in the C2F action being enabled only when the Celsius
+	// field's text can be parsed to a floating point number.
 	celsTextField.getDocument().addDocumentListener(new SimpleDocumentListener() {
 	    public void handleDocumentEvent(DocumentEvent event) {
 		c2fAction.setEnabled(floatStringIsValid(celsTextField.getText()));
 	    }
 	});
 
+
+	// Will result in the Clear action being enabled only when there is
+	// any text in either text field.
 	DocumentListener clearDocumentListener = new SimpleDocumentListener() {
 	    public void handleDocumentEvent(DocumentEvent event) {
 
@@ -117,34 +196,13 @@ public class FrameInJava extends JFrame {
 
 	fahrTextField.getDocument().addDocumentListener(clearDocumentListener);
 	celsTextField.getDocument().addDocumentListener(clearDocumentListener);
-
     }
 
 
-    private JPanel createConvertersPanel() {
-
-        JPanel labelPanel = new JPanel(new GridLayout(0, 1, 5, 5));
-        labelPanel.add(new JLabel("Fahrenheit:  "));
-        labelPanel.add(new JLabel("Celsius:  "));
-
-        JPanel textFieldPanel = new JPanel(new GridLayout(0, 1, 5, 5));
-        textFieldPanel.add(fahrTextField);
-        textFieldPanel.add(celsTextField);
-
-	String tooltip_text = "Input a temperature";
-	fahrTextField.setToolTipText(tooltip_text);
-	celsTextField.setToolTipText(tooltip_text);
-
-	setupDocumentListeners();	
-
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.add(labelPanel, BorderLayout.WEST);
-        panel.add(textFieldPanel, BorderLayout.CENTER);
-
-        return panel;
-    }
-
-
+    /**
+     * Creates the button panel and lay out such that they will always
+     * stay at the right side of the window.
+     */
     private JPanel createButtonsPanel() {
         JPanel innerPanel = new JPanel(new GridLayout(1, 0, 5, 5));
         innerPanel.add(new JButton(f2cAction));
@@ -159,25 +217,10 @@ public class FrameInJava extends JFrame {
     }
     
 
-    private boolean floatStringIsValid(String s) {
-	
-	boolean valid = true;
-
-	try {
-	    new Double(s);
-	} catch(NumberFormatException e) {
-	    valid = false;
-	}
-
-	return valid;
-    }
-
-
-    public static void main(String [] args) {
-         new FrameInJava().setVisible(true);
-    }
-
-
+    /**
+     * Action to convert from Fahrenheit to Celsius that will be accessible
+     * via button, menu item, or Ctrl-t.
+     */
     private class F2CAction extends AbstractAction {
 
         F2CAction() {
@@ -201,6 +244,11 @@ public class FrameInJava extends JFrame {
     }
 
 
+
+    /**
+     * Action to convert from Celsius to Fahrenheit that will be accessible
+     * via button, menu item, or Ctrl-t.
+     */
     private class C2FAction extends AbstractAction {
 
         C2FAction() {
@@ -223,6 +271,11 @@ public class FrameInJava extends JFrame {
     }
 
 
+
+    /**
+     * Action to clear the text fields that will be accessible via button,
+     * menu item, or Ctrl-l.
+     */
     private class ClearAction extends AbstractAction {
 
         ClearAction() {
@@ -239,6 +292,35 @@ public class FrameInJava extends JFrame {
     }
 
 
+
+    /**
+     * DocumentListener that will set the enabled state of the Clear
+     * action based on the state of the text fields.
+     *
+     * Usually, these kinds of actions are implemented as anonymous inner
+     * classes, but this one's implementation was a little longer, so I
+     * made it a named inner class instead.
+     */
+    class ClearActionDocumentListener extends SimpleDocumentListener {
+
+	public void handleDocumentEvent(DocumentEvent event) {
+
+	    String ctext = celsTextField.getText();
+	    String ftext = fahrTextField.getText();
+
+	    boolean should_enable =
+		(ctext != null && ctext.length() > 0) ||
+		(ftext != null && ftext.length() > 0);
+
+	    clearAction.setEnabled(should_enable);
+	}
+    }
+
+
+    /**
+     * Action to exit the program that will be accessible via button,
+     * menu item, or Ctrl-x.
+     */
     private class ExitAction extends AbstractAction {
 
         ExitAction() {
@@ -254,6 +336,32 @@ public class FrameInJava extends JFrame {
     }
 
 
+    /**
+     * Returns true if, and only if, the string passed can successfully
+     * be converted to a floating point number (specifically, a Double).
+     */
+    private boolean floatStringIsValid(String s) {
+	
+	boolean valid = true;
+
+	try {
+	    new Double(s);
+	} catch(NumberFormatException e) {
+	    valid = false;
+	}
+
+	return valid;
+    }
+
+
+
+    /**
+     * Centers the window on the screen based on the graphical information
+     * reported by the java.awt.Toolkit.  Note that in some cases, such as
+     * use of multiple nonmirrored displays, the position may be odd, since
+     * the toolkit may report the sum of all display space across all available
+     * displays.
+     */
     private void centerOnScreen() {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         Dimension componentSize = getSize();
@@ -262,4 +370,9 @@ public class FrameInJava extends JFrame {
         setLocation((int) new_x, (int) new_y);
     }
 
+
+
+    public static void main(String [] args) {
+         new FrameInJava().setVisible(true);
+    }
 }
