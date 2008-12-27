@@ -3,9 +3,20 @@ import javax.swing.event.DocumentListener;
 
 
 
+/**
+ * Simplifies the DocumentListener interface by having all three
+ * interface methods delegate to a single method.
+ *
+ * To use this abstract class, subclass it and implement the abstract
+ * method handleDocumentEvent().
+ */
 public abstract class SimpleDocumentListener implements DocumentListener {
 
 
+    /**
+     * Implement this method when subclassing this class.
+     * It will be called whenever a DocumentEvent occurs.
+     */
     abstract public void handleDocumentEvent(DocumentEvent event);
 
 
