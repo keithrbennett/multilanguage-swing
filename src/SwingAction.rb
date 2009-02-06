@@ -5,7 +5,7 @@ require 'java'
 # This class enables the specification of a Swing action
 # in a format natural to Ruby.
 #
-# It takes and stores a code block as the action's behavior,
+# It takes and stores a functor as the action's behavior,
 # so there is no need to define a new class for each behavior.
 # Also, it allows the optional specification of the action's
 # properties via the passing of hash entries, which are
@@ -16,7 +16,7 @@ class SwingAction < AbstractAction
   attr_accessor :functor
 
 
-# Creates the action object with a code block, name, and options:
+# Creates the action object with a functor, name, and options:
 #
 # functor - a functor is a functional object; in Ruby a functor 
 # is implemented as a lambda or a Proc, both of which are similar to,
@@ -52,5 +52,3 @@ class SwingAction < AbstractAction
     functor.call action_event
   end
 end
-
-  
