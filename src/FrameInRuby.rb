@@ -1,3 +1,7 @@
+# FrameInRuby
+# Copyright, Bennett Business Solutions, Inc., 2008
+
+
 require 'java'
 
 # In Java, classes in the java.lang package do not need to be imported.
@@ -266,7 +270,7 @@ class FrameInRuby < JFrame
     is_valid = true
   
     begin
-      Float(str) # convert but discard converted value
+      Double(str) # convert but discard converted value
     rescue(ArgumentError)
       is_valid = false
     end
@@ -289,6 +293,24 @@ class FrameInRuby < JFrame
   end
   
 end
+
+
+require 'test/unit'
+class FrameInRubyTester < Test::Unit::TestCase
+
+  def test_float_string_valid
+
+    frame = FrameInRuby.new
+
+    sb_true_values  = ["-1.2345", "0", "1.2345", "1_000", " -1.2345E4 "]
+    sb_false_values = ["3x", "x", "", "+", "_", "x2134"]
+
+    sb_true_values.each  { |val| assert((frame.float_string_valid? val), "#{val} s/b true but was false") }
+    sb_false_values.each { |val| assert((! (frame.float_string_valid? val)), "#{val} s/b false but was true") }
+  end
+end
+
+
 
 
 
