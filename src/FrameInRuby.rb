@@ -7,6 +7,7 @@ require 'java'
 # In Java, classes in the java.lang package do not need to be imported.
 # In JRuby, they do, so that JRuby can distinguish it from a Ruby constant.
 import java.lang.Double
+import java.lang.NumberFormatException
 
 # In the Java version of the program, it was necessary to import Dimension
 # because it was needed to define the type of a variable.  In Ruby, it is
@@ -42,6 +43,18 @@ require 'SwingAction'
 require 'SimpleDocumentListener'
 
 
+module TemperatureConversion
+
+  def f2c(f)
+    ((f - 32) * 5 / 9)
+  end
+
+  def c2f(c)
+    (c * 9 / 5) + 32
+  end
+end
+
+
 # Main application frame containing menus, text fields for the temperatures,
 # and buttons.  The menu items and buttons are driven by shared actions,
 # which are disabled and enabled based on the state of the text fields.
@@ -54,6 +67,8 @@ require 'SimpleDocumentListener'
 # The Clear action is enabled when there is any text in either of the text fields.
 
 class FrameInRuby < JFrame
+
+  include TemperatureConversion
 
   attr_accessor :fahr_text_field, :cels_text_field
 
@@ -225,8 +240,8 @@ class FrameInRuby < JFrame
       text = fahr_text_field.getText
 
       if text != nil and text.length > 0
-        fahr = Double::parseDouble(text);
-        cels = (fahr - 32.0) * 5.0 / 9.0;
+        fahr = Double::parseDouble(text)
+        cels = f2c fahr
         cels_text = Double::toString(cels)
         cels_text_field.setText cels_text
       end
@@ -239,8 +254,8 @@ class FrameInRuby < JFrame
       text = cels_text_field.getText
   
       if text != nil and text.length > 0
-        cels = Double::parseDouble(text);
-        fahr = (cels * 9.0 / 5.0) + 32.0
+        cels = Double::parseDouble(text)
+        fahr = c2f cels
         
         fahr_text = Double::toString(fahr)
         fahr_text_field.setText fahr_text
@@ -270,8 +285,8 @@ class FrameInRuby < JFrame
     is_valid = true
   
     begin
-      Double(str) # convert but discard converted value
-    rescue(ArgumentError)
+      Double::parseDouble(str) # convert but discard converted value
+    rescue(NumberFormatException)
       is_valid = false
     end
     
@@ -293,24 +308,6 @@ class FrameInRuby < JFrame
   end
   
 end
-
-
-require 'test/unit'
-class FrameInRubyTester < Test::Unit::TestCase
-
-  def test_float_string_valid
-
-    frame = FrameInRuby.new
-
-    sb_true_values  = ["-1.2345", "0", "1.2345", "1_000", " -1.2345E4 "]
-    sb_false_values = ["3x", "x", "", "+", "_", "x2134"]
-
-    sb_true_values.each  { |val| assert((frame.float_string_valid? val), "#{val} s/b true but was false") }
-    sb_false_values.each { |val| assert((! (frame.float_string_valid? val)), "#{val} s/b false but was true") }
-  end
-end
-
-
 
 
 
