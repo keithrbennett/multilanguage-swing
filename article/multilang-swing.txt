@@ -1,0 +1,32 @@
+This series of articles will illustrate the powerful synergy that results when combining the power, reliability, portability, and rich library set of the Java platform with the power and flexibility of JRuby and Clojure.
+
+We'll start out with a simple Fahrenheit/Celsius temperature converter Swing application written in Java, and then translating it to JRuby and Clojure.
+
+Here is an image of the application's sole window.  There are text fields for entering the temperature, and buttons to perform the conversion, clear the text fields, and exit the program.
+
+Bear with me, the following two paragraphs are relevant to the code discussion...
+
+Swing enables the sharing of behavior among various user actions such as menu items, buttons, and other events via the sharing of Action objects.  So, for example, program exit can be achieved by either clicking the Exit button, or executing the Exit item of the File Menu.
+
+In addition, even text fields conform to the MVC (model/view/controller) principle.  Each text field contains Document objects that serves as its model.
+
+These two things enable the clean and dry implementation of enabling and disabling of actions (and thereby the buttons and menu items that use them) to make sense given the program's state at any given time.  We merely attach a DocumentListener to the text fields that hook into text changes, and enable or disable the fields as appropriate.
+
+Unfortunately, the Swing DocumentListener interface requires implementing behavior for three different types of events (text change, insert, and remove), and provides no way to simply add a single behavior that will be applied to all three.  We will therefore create an adapter that remedies this.  The implementation of this adapter will highlight the greater flexibility of JRuby and Clojure through their support of code blocks as first class objects.
+
+In Java, this adapter is the SimpleDocumentListener, which implements DocumentListener.  It has a single abstract method that must be implemented by its subclasses, and delegates to that method from all three DocumentListener interface methods.  Note that it is necessary to create a new class inheriting from SimpleDocumentListener in order to use it.
+
+In contrast, Ruby and Clojure support code objects (lambdas, for example) that enable specifying the behavior by itself, without requiring the ceremony of creating an entire class to contain it.  Therefore, in Ruby, our adapter is a a class that is instantiated with such a code block.  Clojure is not a functional language, not an object oriented language, so we create an adapter function rather than an adapter class.
+
+Here are the adapters in the three languages, and the way in which they are used.
+
+[Insert code here.]
+
+Similarly, Java requires that Swing actions be implemented as separate classes, although the only thing that differs among them is the behavior specified in the actionPeformed method.  (One could argue that a separate class *is* the appropriate way to express nontrivial processing, but then again if it is nontrivial the bulk of the processing might really belong in a model type class and not the action.)  
+
+We can therefore employ the same strategy as we did with the document listener to simplify Swing programming in JRuby and Clojure.  Here they are:
+
+[insert code here]
+
+
+
