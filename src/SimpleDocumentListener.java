@@ -21,21 +21,16 @@ public abstract class SimpleDocumentListener implements DocumentListener {
 
 
     public void changedUpdate(DocumentEvent event) {
-	handleDocumentEvent(event);
+        handleDocumentEvent(event);
     }
 
 
     public void insertUpdate(DocumentEvent event) {
-	handleDocumentEvent(event);
+        handleDocumentEvent(event);
     }
 
 
     public void removeUpdate(DocumentEvent event) {
-	handleDocumentEvent(event);
+        handleDocumentEvent(event);
     }
-
-
 }
-
-
-

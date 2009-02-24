@@ -1,5 +1,5 @@
 # FrameInRuby
-# Copyright, Bennett Business Solutions, Inc., 2008
+# Copyright, Keith Bennett, 2009
 
 
 require 'java'
@@ -45,12 +45,15 @@ require 'SimpleDocumentListener'
 
 module TemperatureConversion
 
+  # Converts a temperature from Fahrenheit to Celsius.
   def f2c(f)
-    ((f - 32) * 5 / 9)
+    ((f - 32) * 5.0 / 9.0)
   end
 
+
+  # Converts a temperature from Celsius to Fahrenheit.
   def c2f(c)
-    (c * 9 / 5) + 32
+    (c * 9.0 / 5.0) + 32
   end
 end
 
@@ -58,7 +61,7 @@ end
 # Main application frame containing menus, text fields for the temperatures,
 # and buttons.  The menu items and buttons are driven by shared actions,
 # which are disabled and enabled based on the state of the text fields.
-# 
+#
 # Temperatures can be converted in either direction, Fahrenheit to Celsius
 # or Celsius to Fahrenheit.  The convert actions (F2C, C2F) are each enabled
 # when the respective source text field (F for F2C, C for C2F) contains text
@@ -74,13 +77,15 @@ class FrameInRuby < JFrame
 
   # These actions will be shared by menu items and buttons.
   attr_accessor :f2c_action, :c2f_action, :clear_action, :exit_action
-  
 
+
+  # Sets up frame with all components, centers on screen,
+  # and sets it up to exit the program when closed.
   def initialize
     super "Fahrenheit <--> Celsius Converter"
 
-    # In Ruby, the double colon is used to refer to static members
-    # (class variables as opposed to instance variables): 
+    # In Ruby, the double colon is used to refer to static data members
+    # (class variables as opposed to instance variables):
     getContentPane.add create_converters_panel, BorderLayout::CENTER
     setup_actions
     getContentPane.add create_buttons_panel,    BorderLayout::SOUTH
@@ -93,63 +98,74 @@ class FrameInRuby < JFrame
 
 
 
+  # Creates the Fahrenheit and Celsius text fields.
   def create_text_fields
 
-    self.fahr_text_field = JTextField.new(15);
-    self.cels_text_field = JTextField.new(15);
+    # Note that in JRuby we can use lambdas as lightweight nested functions
+    # to increase DRYness:
+    create_field = lambda do
+      f = JTextField.new(15);
+      f.setToolTipText "Input a temperature."
+      f
+    end
 
-    tooltip_text = "Input a temperature"
-    fahr_text_field.setToolTipText tooltip_text
-    cels_text_field.setToolTipText tooltip_text
-  
+    self.fahr_text_field = create_field.call
+    self.cels_text_field = create_field.call
+
     setup_text_field_listeners
   end
-  
 
 
+
+  # Creates the panel containing the Fahrenheit and Celsius labels
+  # and text fields.
   def create_converters_panel
-    
-    labelPanel = JPanel.new(GridLayout.new(0, 1, 5, 5))
+
+    # Another lambda as lightweight nested function:
+    create_an_inner_panel = lambda { JPanel.new(GridLayout.new(0, 1, 5, 5))}
+
+    labelPanel = create_an_inner_panel.call
     labelPanel.add(JLabel.new("Fahrenheit:  "))
     labelPanel.add(JLabel.new("Celsius:  "))
 
     create_text_fields
 
-    textFieldPanel = JPanel.new(GridLayout.new(0, 1, 5, 5));
-    textFieldPanel.add(fahr_text_field);
-    textFieldPanel.add(cels_text_field);
+    textFieldPanel = create_an_inner_panel.call
+    textFieldPanel.add(fahr_text_field)
+    textFieldPanel.add(cels_text_field)
 
-    panel = JPanel.new(BorderLayout.new());
-    panel.add(labelPanel, BorderLayout::WEST);
-    panel.add(textFieldPanel, BorderLayout::CENTER);
+    panel = JPanel.new(BorderLayout.new())
+    panel.add(labelPanel, BorderLayout::WEST)
+    panel.add(textFieldPanel, BorderLayout::CENTER)
     panel
   end
-  
-  
-  
-  # Creates menu bar with File, Edit, and Convert menus.
+
+
+
+  # Creates the menu bar with File, Edit, and Convert menus.
   def create_menu_bar
-    
+
     menubar = JMenuBar.new
-    
+
     file_menu = JMenu.new "File"
     file_menu.add exit_action
     menubar.add file_menu
-    
+
     edit_menu = JMenu.new "Edit"
     edit_menu.add clear_action
     menubar.add edit_menu
-    
+
     convert_menu = JMenu.new "Convert"
     convert_menu.add f2c_action
     convert_menu.add c2f_action
     menubar.add convert_menu
-    
+
     menubar
   end
-  
 
-  
+
+  # Sets up the listeners that will determine the enabled states of the
+  # temperature conversion (f2c and c2f) and clear actions.
   def setup_text_field_listeners
 
     # In Java, a separate class is required for each type
@@ -160,11 +176,11 @@ class FrameInRuby < JFrame
     f2c_enabler = lambda {
       f2c_action.setEnabled float_string_valid?(fahr_text_field.getText)
     }
-    
+
     c2f_enabler = lambda {
       c2f_action.setEnabled float_string_valid?(cels_text_field.getText)
     }
-    
+
     clear_enabler = lambda {
       ctext = cels_text_field.getText
       ftext = fahr_text_field.getText
@@ -187,54 +203,57 @@ class FrameInRuby < JFrame
 
 
 
+  # Sets up the temperature conversion, clear, and exit actions, including
+  # name, behavior, tooltip, and accelerator key.
   def setup_actions
     self.f2c_action  = SwingAction.new f2c_action_block, "Fahr --> Cels",
         Action::SHORT_DESCRIPTION => "Convert from Fahrenheit to Celsius",
-        Action::ACCELERATOR_KEY => 
+        Action::ACCELERATOR_KEY =>
             KeyStroke.getKeyStroke(KeyEvent::VK_S, Event::CTRL_MASK)
-        
+
     f2c_action.setEnabled false
-        
+
     self.c2f_action  = SwingAction.new c2f_action_block, "Cels --> Fahr",
         Action::SHORT_DESCRIPTION => "Convert from Celsius to Fahrenheit",
-        Action::ACCELERATOR_KEY => 
+        Action::ACCELERATOR_KEY =>
             KeyStroke.getKeyStroke(KeyEvent::VK_T, Event::CTRL_MASK)
-        
+
     c2f_action.setEnabled false
 
     self.exit_action = SwingAction.new exit_action_block, "Exit",
         Action::SHORT_DESCRIPTION => "Exit this program",
-        Action::ACCELERATOR_KEY => 
+        Action::ACCELERATOR_KEY =>
             KeyStroke.getKeyStroke(KeyEvent::VK_X, Event::CTRL_MASK)
-        
+
     self.clear_action = SwingAction.new clear_action_block, "Clear",
         Action::SHORT_DESCRIPTION => "Reset to empty the temperature fields",
-        Action::ACCELERATOR_KEY => 
+        Action::ACCELERATOR_KEY =>
             KeyStroke.getKeyStroke(KeyEvent::VK_L, Event::CTRL_MASK)
     clear_action.setEnabled false
-        
-            
-  end
-     
-    
-    
-  def create_buttons_panel
-    
-    innerPanel = JPanel.new(GridLayout.new(1, 0, 5, 5))
 
+
+  end
+
+
+  # Creates the button panel laid out such that the buttons will always
+  # stay at the right side of the window.
+  def create_buttons_panel
+
+    innerPanel = JPanel.new(GridLayout.new(1, 0, 5, 5))
     innerPanel.add(JButton.new f2c_action)
     innerPanel.add(JButton.new c2f_action)
     innerPanel.add(JButton.new clear_action)
     innerPanel.add(JButton.new exit_action)
-      
+
     outerPanel = JPanel.new(BorderLayout.new())
     outerPanel.add innerPanel, BorderLayout::EAST
     outerPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0))
     outerPanel
-    
+
   end
 
 
+  # Defines and returns the behavior for the Fahrenheit to Celsius conversion.
   def f2c_action_block
     lambda  do |event|
       text = fahr_text_field.getText
@@ -247,52 +266,57 @@ class FrameInRuby < JFrame
       end
     end
   end
-  
-       
+
+
+
+  # Defines and returns the behavior for the Celsius to Fahrenheit conversion.
   def c2f_action_block
     lambda do |event|
       text = cels_text_field.getText
-  
+
       if text != nil and text.length > 0
         cels = Double::parseDouble(text)
         fahr = c2f cels
-        
+
         fahr_text = Double::toString(fahr)
         fahr_text_field.setText fahr_text
       end
     end
   end
-  
 
+
+
+  # Defines and returns the behavior for the clear action.
   def clear_action_block
     lambda do |event|
       fahr_text_field.setText ''
       cels_text_field.setText ''
     end
   end
-  
-  
-  def exit_action_block
+
+
+
+  # Defines and returns the behavior for the exit action.
+    def exit_action_block
     lambda { |event| java.lang.System::exit 0 }
   end
-  
-  
+
+
+
   # A nice touch in Ruby is the ability to name functions with names
   # that end in "?" to indicate that they return a boolean value.
-
   def float_string_valid?(str)
-  
-    is_valid = true
-  
+
     begin
       Double::parseDouble(str) # convert but discard converted value
-    rescue(NumberFormatException)
+      is_valid = true
+    rescue NumberFormatException
       is_valid = false
     end
-    
+
     is_valid
   end
-  
+
 
   # Centers the window on the screen based on the graphical information
   # reported by the java.awt.Toolkit.  Note that in some cases, such as
@@ -303,10 +327,10 @@ class FrameInRuby < JFrame
     screenSize = Toolkit.getDefaultToolkit().getScreenSize()
     componentSize = getSize()
     new_x = (screenSize.getWidth()  - componentSize.getWidth())  / 2
-    new_y = (screenSize.getHeight() - componentSize.getHeight()) / 2;
-    setLocation(new_x, new_y);
+    new_y = (screenSize.getHeight() - componentSize.getHeight()) / 2
+    setLocation(new_x, new_y)
   end
-  
+
 end
 
 

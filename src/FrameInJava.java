@@ -2,7 +2,7 @@
  * FrameInJava - Sample Swing Application, written in Java, that does
  * Fahrenheit <--> Celsius Temperature Conversion
  *
- * Copyright 2008, Bennett Business Solutions, Inc.
+ * Copyright 2009, Keith Bennett
  */
 
 import java.awt.BorderLayout;
@@ -44,8 +44,8 @@ import javax.swing.event.DocumentListener;
  */
 public class FrameInJava extends JFrame {
 
-    private JTextField fahrTextField = new JTextField(15);
-    private JTextField celsTextField = new JTextField(15);
+    private JTextField fahrTextField;
+    private JTextField celsTextField;
 
     // These actions will be shared by menu items and buttons.
     private AbstractAction f2cAction;   // convert Fahr. to Cels.
@@ -113,16 +113,21 @@ public class FrameInJava extends JFrame {
 
 
     /**
-     * Sets up the Fahrenheit and Celsius text fields with their tooltips.
+     * @return a text field for temperature input, with tooltip text.
+     */
+    private JTextField createTextField() {
+        JTextField textField = new JTextField(15);
+        textField.setToolTipText("Input a temperature.");
+        return textField;
+    }
+
+
+    /**
+     * Sets up the Fahrenheit and Celsius text fields with tooltip text.
      */
     private void createTextFields() {
-
-        fahrTextField = new JTextField(15);
-        celsTextField = new JTextField(15);
-
-        String tooltip_text = "Input a temperature";
-        fahrTextField.setToolTipText(tooltip_text);
-        celsTextField.setToolTipText(tooltip_text);
+        fahrTextField = createTextField();
+        celsTextField = createTextField();
     }
 
 
@@ -228,20 +233,7 @@ public class FrameInJava extends JFrame {
 
         // Will result in the Clear action being enabled only when there is
         // any text in either text field.
-        DocumentListener clearDocumentListener = new SimpleDocumentListener() {
-            public void handleDocumentEvent(DocumentEvent event) {
-
-                String ctext = celsTextField.getText();
-                String ftext = fahrTextField.getText();
-
-                boolean should_enable =
-                    (ctext != null && ctext.length() > 0) ||
-                    (ftext != null && ftext.length() > 0);
-
-                clearAction.setEnabled(should_enable);
-            }
-        };
-
+        DocumentListener clearDocumentListener = new ClearActionDocumentListener();
         fahrTextField.getDocument().addDocumentListener(clearDocumentListener);
         celsTextField.getDocument().addDocumentListener(clearDocumentListener);
     }
