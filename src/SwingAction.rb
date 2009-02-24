@@ -13,12 +13,12 @@ require 'java'
 
 class SwingAction < AbstractAction
 
-  attr_accessor :functor
+  attr_accessor :action
 
 
 # Creates the action object with a functor, name, and options:
 #
-# functor - a functor is a functional object; in Ruby a functor 
+# functor - a functor is a functional object; in Ruby a functor
 # is implemented as a lambda or a Proc, both of which are similar to,
 # but not exactly the same as, a code block.
 #
@@ -39,16 +39,16 @@ class SwingAction < AbstractAction
 # self.exit_action = SwingAction.new lambda { java.lang.System.exit 0 },
 #    "Exit",
 #     Action::SHORT_DESCRIPTION => "Exit this program",
-#     Action::ACCELERATOR_KEY => 
+#     Action::ACCELERATOR_KEY =>
 #         KeyStroke.getKeyStroke(KeyEvent::VK_X, Event::CTRL_MASK)
-#  
-  def initialize(functor, name, options=nil)
+#
+  def initialize(action, name, options=nil)
     super name
-    self.functor = functor
+    self.action = action
     options.each { |key, value| putValue key, value } if options
   end
-  
+
   def actionPerformed(action_event)
-    functor.call action_event
+    action.call action_event
   end
 end
