@@ -1,11 +1,11 @@
 require 'java'
 
-#import javax.swing.AbstractAction
+import javax.swing.AbstractAction
 
 # This class enables the specification of a Swing action
 # in a format natural to Ruby.
 #
-# It takes and stores a functor as the action's behavior,
+# It takes and stores an action as the action's behavior,
 # so there is no need to define a new class for each behavior.
 # Also, it allows the optional specification of the action's
 # properties via the passing of hash entries, which are
@@ -16,9 +16,9 @@ class SwingAction < AbstractAction
   attr_accessor :action
 
 
-# Creates the action object with a functor, name, and options:
+# Creates the action object with a action, name, and options:
 #
-# functor - a functor is a functional object; in Ruby a functor
+# action - an action is a functional object; in Ruby an action
 # is implemented as a lambda or a Proc, both of which are similar to,
 # but not exactly the same as, a code block.
 #
@@ -42,10 +42,10 @@ class SwingAction < AbstractAction
 #     Action::ACCELERATOR_KEY =>
 #         KeyStroke.getKeyStroke(KeyEvent::VK_X, Event::CTRL_MASK)
 #
-  def initialize(action, name, options=nil)
+  def initialize(name, options=nil, &action)
     super name
-    self.action = action
     options.each { |key, value| putValue key, value } if options
+    self.action = action
   end
 
   def actionPerformed(action_event)

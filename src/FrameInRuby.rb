@@ -206,29 +206,35 @@ class FrameInRuby < JFrame
   # Sets up the temperature conversion, clear, and exit actions, including
   # name, behavior, tooltip, and accelerator key.
   def setup_actions
-    self.f2c_action  = SwingAction.new f2c_action_block, "Fahr --> Cels",
+    self.f2c_action  = SwingAction.new("Fahr --> Cels",
         Action::SHORT_DESCRIPTION => "Convert from Fahrenheit to Celsius",
         Action::ACCELERATOR_KEY =>
-            KeyStroke.getKeyStroke(KeyEvent::VK_S, Event::CTRL_MASK)
+            KeyStroke.getKeyStroke(KeyEvent::VK_S, Event::CTRL_MASK),
+        &f2c_action_block)
 
     f2c_action.setEnabled false
 
-    self.c2f_action  = SwingAction.new c2f_action_block, "Cels --> Fahr",
+    self.c2f_action  = SwingAction.new("Cels --> Fahr",
         Action::SHORT_DESCRIPTION => "Convert from Celsius to Fahrenheit",
         Action::ACCELERATOR_KEY =>
-            KeyStroke.getKeyStroke(KeyEvent::VK_T, Event::CTRL_MASK)
+            KeyStroke.getKeyStroke(KeyEvent::VK_T, Event::CTRL_MASK),
+        & c2f_action_block)
 
     c2f_action.setEnabled false
 
-    self.exit_action = SwingAction.new exit_action_block, "Exit",
+    self.exit_action = SwingAction.new("Exit",
         Action::SHORT_DESCRIPTION => "Exit this program",
         Action::ACCELERATOR_KEY =>
-            KeyStroke.getKeyStroke(KeyEvent::VK_X, Event::CTRL_MASK)
+            KeyStroke.getKeyStroke(KeyEvent::VK_X, Event::CTRL_MASK))\
+        do |event|
+          java.lang.System::exit 0
+        end
 
-    self.clear_action = SwingAction.new clear_action_block, "Clear",
+    self.clear_action = SwingAction.new("Clear",
         Action::SHORT_DESCRIPTION => "Reset to empty the temperature fields",
         Action::ACCELERATOR_KEY =>
-            KeyStroke.getKeyStroke(KeyEvent::VK_L, Event::CTRL_MASK)
+            KeyStroke.getKeyStroke(KeyEvent::VK_L, Event::CTRL_MASK),
+        &clear_action_block)
     clear_action.setEnabled false
 
 
