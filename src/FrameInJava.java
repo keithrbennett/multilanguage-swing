@@ -79,7 +79,7 @@ public class FrameInJava extends JFrame {
      * @return true if, and only if, the string passed can successfully
      * be converted to a floating point number (specifically, a Double).
      */
-    private static boolean floatStringIsValid(String s) {
+    private static boolean doubleStringIsValid(String s) {
 
         boolean valid = true;
 
@@ -218,7 +218,7 @@ public class FrameInJava extends JFrame {
         // text can be parsed to a floating point number.
         fahrTextField.getDocument().addDocumentListener(new SimpleDocumentListener() {
             public void handleDocumentEvent(DocumentEvent event) {
-                f2cAction.setEnabled(floatStringIsValid(fahrTextField.getText()));
+                f2cAction.setEnabled(doubleStringIsValid(fahrTextField.getText()));
             }
         });
 
@@ -226,7 +226,7 @@ public class FrameInJava extends JFrame {
         // field's text can be parsed to a floating point number.
         celsTextField.getDocument().addDocumentListener(new SimpleDocumentListener() {
             public void handleDocumentEvent(DocumentEvent event) {
-                c2fAction.setEnabled(floatStringIsValid(celsTextField.getText()));
+                c2fAction.setEnabled(doubleStringIsValid(celsTextField.getText()));
             }
         });
 
@@ -276,7 +276,7 @@ public class FrameInJava extends JFrame {
             String text = fahrTextField.getText();
             if (text != null && text.length() > 0)
             {
-                double fahr = Float.parseFloat(text);
+                double fahr = Double.parseDouble(text);
                 double cels = calc_f2c(fahr);
                 String celsText = Double.toString(cels);
                 celsTextField.setText(celsText);
@@ -303,7 +303,7 @@ public class FrameInJava extends JFrame {
             String text = celsTextField.getText();
             if (text != null && text.length() > 0)
             {
-                double cels = Float.parseFloat(text);
+                double cels = Double.parseDouble(text);
                 double fahr = calc_c2f(cels);
                 String fahrText = Double.toString(fahr);
                 fahrTextField.setText(fahrText);
