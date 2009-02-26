@@ -5,7 +5,7 @@ A powerful synergy results when combining the power, reliability, portability, a
 	<li>Syntactic sugar for the specification of hash values as parameters - hash (map, in Java lingo) key/value pairs can be passed to a function literally, and the function will receive them as a single hash.  In other words, they can be passed without the need for the programmer to create and populate a hash instance.</li>
 </ol>
 
-In order to contrast Java and JRuby, and showcase the above features, we will implement a Fahrenheit/Celsius temperature converter in both Java and JRuby that uses Java Swing as its GUI library.
+In order to contrast Java and JRuby, and showcase the above features, we will implement a Fahrenheit/Celsius temperature converter in both Java and JRuby that uses Java Swing as its GUI library.  The source code can be found at <a href="http://github.com/keithrbennett/multilanguage-swing">http://github.com/keithrbennett/multilanguage-swing</a>. The README file has instructions for how to run the Java and Ruby versions.
 
 Here is an image of the application's sole window.  There are text fields for entering the temperature, and buttons and menu items to perform the conversions, clear the text fields, and exit the program.
 
