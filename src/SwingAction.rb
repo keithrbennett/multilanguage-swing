@@ -5,6 +5,7 @@ require 'java'
 # imports of Java classes are not confined to the file
 # in which they are specified; once you import a class,
 # it will be imported for other classes as well.
+# This may be fixed in a future version of JRuby.
 import javax.swing.AbstractAction
 
 
@@ -23,7 +24,7 @@ class SwingAction < AbstractAction
 
 # Creates the action object with a behavior, name, and options:
 #
-# behavior - a behavior is implemented as a code block, lambda,
+# behavior - a behavior can be a code block, lambda,
 # or a Proc.
 #
 # name - this is the name that will be used for the menu option,

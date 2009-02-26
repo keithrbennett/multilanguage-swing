@@ -17,9 +17,9 @@ Swing enables the sharing of behavior among visual components such as menu items
 
 When an action is modified, as, for example, to enable or disable it, then all components expressing that action modify their state and appearance accordingly.  When the program starts up, the conversion and clear buttons' actions are not appropriate given that both text fields are empty; therefore, those actions are disabled.  Although you can't see it in this picture, in addition to the buttons being disabled, the corresponding menu items are disabled as well.
 
-Swing is pretty good with conforming to the MVC (model/view/controller) principle.  Even the lowly text field contains a reference to a model, which is an implementation of the javax.swing.text.Document interface.  You can attach listeners to this model, so that when the text changes you can inspect the contents and respond accordingly.  (A common Swing programming mistake is to listen to keyboard events instead, but this does not catch some cut and paste events, nor the programmatic setting of the content.)
+Swing is pretty good about conforming to the MVC (model/view/controller) principle.  Even the lowly text field contains a reference to a model, which is an implementation of the javax.swing.text.Document interface.  You can attach listeners to this model, so that when the text changes you can inspect the contents and respond accordingly.  (A common Swing programming mistake is to listen to keyboard events instead, but this does not catch some cut and paste events, nor the programmatic setting of the content.)
 
-These two Swing features enable the effective, clean, and dry implementation of enabling and disabling of action components based on the program's state at any given time.  We merely attach document listeners to the text fields that hook into text changes, and enable or disable the actions as appropriate.
+These two Swing features enable the effective, clean, and dry implementation of enabling and disabling of action components based on the program's state at any given time.  We merely attach document listeners to the text fields that hook into text changes, and enable or disable the actions as appropriate when they are called.
 
 Unfortunately, the Swing DocumentListener interface requires implementing behavior for three different types of text events (change, insert, and remove), and provides no way to simply specify a single behavior that will be applied to all three.  (In fact, in several years of Swing programming I never encountered a case where the respective events needed to be handled differently, for performance or any other reason.)  We will therefore create an adapter that remedies this.  The implementations of this adapter in Java and JRuby will highlight the greater flexibility of JRuby through its support of code blocks as first class objects and its syntactic sugar that makes passing hash entries more natural.
 
@@ -134,7 +134,7 @@ Note that unlike Java, where it is necessary to subclass the abstract  Java clas
 <hr />
 <p />
 
-As with Swing listeners, Swing actions written in Java are implemented as classes, although usually the only thing that differs among them is the behavior specified in the actionPeformed method.  (One could argue that a separate class <em>is</em> the appropriate way to express nontrivial processing, but then again if it is nontrivial the bulk of the processing might really belong in a model type class and not the action.  This not only makes testing easier, it also increases code coherence; it is much easier this way to provide an alternate or replacement user or scripting interface.) We can therefore employ the same strategy as we did with the document listener.  Here is how an action is specified in Java:
+As with Swing listeners, Swing actions written in Java are implemented as classes, although usually the only thing that differs among them is the behavior specified in the actionPeformed method.  (One could argue that a separate class <em>is</em> the appropriate way to express nontrivial processing, but then again if it is nontrivial the bulk of the processing might really belong in a model type class and not the action.  This not only makes testing easier, it also makes it much easier to provide an alternate or replacement user or scripting interface; otherwise put, it increases code coherence.) We can therefore employ the same strategy as we did with the document listener.  Here is how the exit action is specified in Java:
 
 [sourcecode language="java"]
     private class ExitAction extends AbstractAction {
@@ -164,6 +164,7 @@ require 'java'
 # imports of Java classes are not confined to the file
 # in which they are specified; once you import a class,
 # it will be imported for other classes as well.
+# This may be fixed in a future version of JRuby.
 import javax.swing.AbstractAction
 
 
@@ -182,7 +183,7 @@ class SwingAction < AbstractAction
 
 # Creates the action object with a behavior, name, and options:
 #
-# behavior - a behavior is implemented as a code block, lambda,
+# behavior - a behavior can be a code block, lambda,
 # or a Proc.
 #
 # name - this is the name that will be used for the menu option,
@@ -234,6 +235,8 @@ Here's how the exit action is specified in the JRuby program:
         end
 [/sourcecode]
 
+While this may seem a bit crowded at first glance, notice that you are passing the name, options, and behavior, in that order.  In that sense it is a logical and legible call.  The <em>=&gt;</em> operator aids in visual recognition of the key/value pairs, so it's easy for the eye to identify the various parts of this call.
+ 
 You can see that the two hash entries are passed as if they were two separate parameters.  However, the function to which they are passed will see them as a single hash instance containing those two key/value pairs.  The <em>do/end</em> pair specifies a literal code block which will be seen by the function as the behavior parameter.  We could also have passed a variable containing a lambda or a proc.
 
 Although the JRuby features described here require some learning for the Java programmer, that learning is, in my opinion, well worth the cost.  The greater conciseness, power, and flexibility of JRuby make writing Swing apps shorter, easier, and of higher quality.  And we've only scratched the surface of JRuby -- there's much, much more.
