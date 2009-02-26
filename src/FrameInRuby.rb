@@ -206,7 +206,7 @@ class FrameInRuby < JFrame
         Action::SHORT_DESCRIPTION => "Convert from Fahrenheit to Celsius",
         Action::ACCELERATOR_KEY =>
             KeyStroke.getKeyStroke(KeyEvent::VK_S, Event::CTRL_MASK),
-        &f2c_action_block)
+        &f2c_behavior)
 
     f2c_action.setEnabled false
 
@@ -214,7 +214,7 @@ class FrameInRuby < JFrame
         Action::SHORT_DESCRIPTION => "Convert from Celsius to Fahrenheit",
         Action::ACCELERATOR_KEY =>
             KeyStroke.getKeyStroke(KeyEvent::VK_T, Event::CTRL_MASK),
-        & c2f_action_block)
+        & c2f_behavior)
 
     c2f_action.setEnabled false
 
@@ -230,7 +230,7 @@ class FrameInRuby < JFrame
         Action::SHORT_DESCRIPTION => "Reset to empty the temperature fields",
         Action::ACCELERATOR_KEY =>
             KeyStroke.getKeyStroke(KeyEvent::VK_L, Event::CTRL_MASK),
-        &clear_action_block)
+        &clear_behavior)
     clear_action.setEnabled false
 
 
@@ -256,7 +256,7 @@ class FrameInRuby < JFrame
 
 
   # Defines and returns the behavior for the Fahrenheit to Celsius conversion.
-  def f2c_action_block
+  def f2c_behavior
     lambda  do |event|
       text = fahr_text_field.getText
 
@@ -272,7 +272,7 @@ class FrameInRuby < JFrame
 
 
   # Defines and returns the behavior for the Celsius to Fahrenheit conversion.
-  def c2f_action_block
+  def c2f_behavior
     lambda do |event|
       text = cels_text_field.getText
 
@@ -289,18 +289,11 @@ class FrameInRuby < JFrame
 
 
   # Defines and returns the behavior for the clear action.
-  def clear_action_block
+  def clear_behavior
     lambda do |event|
       fahr_text_field.setText ''
       cels_text_field.setText ''
     end
-  end
-
-
-
-  # Defines and returns the behavior for the exit action.
-    def exit_action_block
-    lambda { |event| java.lang.System::exit 0 }
   end
 
 

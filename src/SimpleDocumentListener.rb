@@ -5,7 +5,8 @@
 # Note that unlike Java, where it is necessary to subclass the abstract
 # Java class SimpleDocumentListener, we can merely create an instance of
 # the Ruby class SimpleDocumentListener with the code block we want
-# executed when a DocumentEvent occurs.
+# executed when a DocumentEvent occurs.   This code can be in the form of
+# a code block, lambda, or proc.
 
 require 'java'
 
@@ -18,15 +19,15 @@ class SimpleDocumentListener
   # DocumentListener interface in JRuby:
   include DocumentListener
 
-  attr_accessor :code_block
+  attr_accessor :behavior
 
-  def initialize(&code_block)
-    self.code_block = code_block
+  def initialize(&behavior)
+    self.behavior = behavior
   end
 
 
-  def changedUpdate(event);  code_block.call event; end
-  def insertUpdate(event);   code_block.call event; end
-  def removeUpdate(event);   code_block.call event; end
+  def changedUpdate(event);  behavior.call event; end
+  def insertUpdate(event);   behavior.call event; end
+  def removeUpdate(event);   behavior.call event; end
 
 end
