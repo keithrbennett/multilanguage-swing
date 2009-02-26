@@ -1,0 +1,9 @@
+To run the program from the Java source files:
+javac *java
+java FrameInJava
+
+To run the program from the Ruby source files:
+rm *class
+jruby FrameInRuby
+
+- Keith Bennett
