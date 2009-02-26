@@ -184,11 +184,11 @@ class FrameInRuby < JFrame
 
     fahr_text_field.getDocument.addDocumentListener(
         SimpleDocumentListener.new do
-          f2c_action.setEnabled float_string_valid?(fahr_text_field.getText)
+          f2c_action.setEnabled double_string_valid?(fahr_text_field.getText)
         end)
     cels_text_field.getDocument.addDocumentListener(
         SimpleDocumentListener.new do
-          c2f_action.setEnabled float_string_valid?(cels_text_field.getText)
+          c2f_action.setEnabled double_string_valid?(cels_text_field.getText)
         end)
 
     clear_document_listener = SimpleDocumentListener.new &clear_enabler
@@ -307,7 +307,7 @@ class FrameInRuby < JFrame
 
   # A nice touch in Ruby is the ability to name functions with names
   # that end in "?" to indicate that they return a boolean value.
-  def float_string_valid?(str)
+  def double_string_valid?(str)
 
     begin
       Double::parseDouble(str) # convert but discard converted value
