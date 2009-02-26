@@ -368,7 +368,7 @@ public class FrameInJava extends JFrame {
             super("Exit");
             putValue(Action.SHORT_DESCRIPTION, "Exit this program");
             putValue(Action.ACCELERATOR_KEY,
-            KeyStroke.getKeyStroke(KeyEvent.VK_X, Event.CTRL_MASK));
+                    KeyStroke.getKeyStroke(KeyEvent.VK_X, Event.CTRL_MASK));
         }
 
         public void actionPerformed(ActionEvent event) {
