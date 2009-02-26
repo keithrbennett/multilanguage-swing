@@ -173,14 +173,6 @@ class FrameInRuby < JFrame
     # This allows us to use instances of the same SimpleDocumentListener
     # class simply creating them with different lambdas.
 
-    f2c_enabler = lambda {
-      f2c_action.setEnabled float_string_valid?(fahr_text_field.getText)
-    }
-
-    c2f_enabler = lambda {
-      c2f_action.setEnabled float_string_valid?(cels_text_field.getText)
-    }
-
     clear_enabler = lambda {
       ctext = cels_text_field.getText
       ftext = fahr_text_field.getText
@@ -191,11 +183,15 @@ class FrameInRuby < JFrame
     }
 
     fahr_text_field.getDocument.addDocumentListener(
-        SimpleDocumentListener.new f2c_enabler)
+        SimpleDocumentListener.new do
+          f2c_action.setEnabled float_string_valid?(fahr_text_field.getText)
+        end)
     cels_text_field.getDocument.addDocumentListener(
-        SimpleDocumentListener.new c2f_enabler)
+        SimpleDocumentListener.new do
+          c2f_action.setEnabled float_string_valid?(cels_text_field.getText)
+        end)
 
-    clear_document_listener = SimpleDocumentListener.new clear_enabler
+    clear_document_listener = SimpleDocumentListener.new &clear_enabler
     fahr_text_field.getDocument.addDocumentListener clear_document_listener
     cels_text_field.getDocument.addDocumentListener clear_document_listener
 
