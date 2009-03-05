@@ -28,8 +28,10 @@
     new-x         (/ (- screen-width comp-width) 2)
     new-y         (/ (- screen-height comp-height) 2)]
 
-    (println (format "Setting component to location %d, %y", new-x, new-y))
-    (.. component setLocation new-x new-y))
+    (. component setLocation new-x new-y))
+
+    ;; return the component
+    component
 )
 
 
@@ -51,28 +53,29 @@
   []
 
   (let [
-    create-an-inner-panel #(JPanel. (GridLayout. 0 1 5 5))
-    label-panel           create-an-inner-panel
-    text-field-panel      create-an-inner-panel
+    create-an-inner-panel (fn [] (JPanel. (GridLayout. 0 1 5 5)))
+    label-panel           (create-an-inner-panel)
+    text-field-panel      (create-an-inner-panel)
     outer-panel           (JPanel. (BorderLayout.))]
 
-    (. label-panel add (JLabel. "Fahrenheit:  "))
-    (. label-panel add (JLabel. "Celsius:     "))
+    (doto label-panel
+      (.add (JLabel. "Fahrenheit:  "))
+      (.add (JLabel. "Celsius:     ")))
 
     (create-text-fields)
-    (. text-field-panel add fahr-text-field)
-    (. text-field-panel add cels-text-field)
+    (doto text-field-panel
+      (.add fahr-text-field)
+      (.add cels-text-field))
 
-    (. outer-panel add label-panel BorderLayout/WEST)
-    (. outer-panel add text-field-panel BorderLayout/CENTER)))
-
+    (doto outer-panel
+      (.add label-panel BorderLayout/WEST)
+      (.add text-field-panel BorderLayout/CENTER))))
 
 
 (def clear-action (proxy [AbstractAction] ["Clear"]
   (actionPerformed [event]
     (. fahr-text-field setText "")
-    (. cels-text-field setText ""))
-))
+    (. cels-text-field setText ""))))
 
 
 (def exit-action (proxy [AbstractAction] ["Exit"]
@@ -80,11 +83,20 @@
 
 
 (def f2c-action  (proxy [AbstractAction] ["F --> C"]
-  (actionPerformed [event] )))
+  (actionPerformed [event] 
+    (let [text (. fahr-text-field getText)
+      f (. Double parseDouble text)
+      c (f2c f)]
+      (. cels-text-field setText (str c))))))
 
 
 (def c2f-action  (proxy [AbstractAction] ["C --> F"]
-  (actionPerformed [event] )))
+  (actionPerformed [event] 
+    (let [text (. cels-text-field getText)
+      c (. Double parseDouble text)
+      f (c2f c)]
+      (. fahr-text-field setText (str f))))))
+
 
 
 (defn create-menu-bar
@@ -121,7 +133,20 @@
     (. clear-action setEnabled should-enable)))
 
  
-(defn create-buttons-panel [] ())
+(defn create-buttons-panel []
+  (let [
+    inner-panel (JPanel. (GridLayout. 1 0 5 5))
+    outer-panel (JPanel. (BorderLayout.))]
+
+    (doto inner-panel
+      (.add (JButton. f2c-action))
+      (.add (JButton. c2f-action))
+      (.add (JButton. clear-action))
+      (.add (JButton. exit-action)))
+
+    (doto outer-panel
+      (.add inner-panel BorderLayout/EAST)
+      (.setBorder (. BorderFactory createEmptyBorder 10 0 0 0)))))
 
 
 (defn create-frame []
@@ -129,14 +154,24 @@
     content-pane (. f getContentPane)]
 
     (doto content-pane
-      (.add (create-converters-panel) BorderLayout/CENTER))
+      (.add (create-converters-panel) BorderLayout/CENTER)
       (.add (create-buttons-panel) BorderLayout/SOUTH)
-      (.setBorder (. BorderFactory createEmptyBorder 12 12 12 12))
+      (.setBorder (. BorderFactory createEmptyBorder 12 12 12 12)))
 
     (doto f
       (.setDefaultCloseOperation JFrame/EXIT_ON_CLOSE)
       (.setJMenuBar (create-menu-bar))
-      (.pack)
-      (center-on-screen f))))
+      (.pack))
 
-(f2c 32)
+    (center-on-screen f)))
+
+
+(defn main []
+  (let [frame (create-frame)]
+
+    (. frame setVisible true)))
+
+(main)
+
+
+;;(. (create-frame) setVisible true)
