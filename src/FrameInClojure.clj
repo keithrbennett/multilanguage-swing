@@ -1,7 +1,12 @@
-(import '(java.awt BorderLayout GridLayout Toolkit)
-        '(javax.swing AbstractAction Action BorderFactory 
-          JFrame JPanel JButton JMenu JMenuBar JTextField JLabel)
-        '(javax.swing.event DocumentListener))
+;; Enhanced temperature conversion utility written in Clojure.
+;; - Keith Bennett, March 2009
+
+
+(ns temp-converter
+  (:import (java.awt BorderLayout GridLayout Toolkit)
+           (javax.swing AbstractAction Action BorderFactory 
+           JFrame JPanel JButton JMenu JMenuBar JTextField JLabel)
+           (javax.swing.event DocumentListener)))
 
 
 (defn f2c
@@ -45,7 +50,8 @@ can be validly parsed into a double."
 
 ;; From CHouser: the first time a set of superclasses 
 ;; is given the proxy macro, it creates a new class 
-;; at macro-expand time.
+;; at macro-expand time.  Clojure does *not* use
+;; java.reflect.Proxy.
 (defn create-simple-document-listener
   "Returns a DocumentListener that performs the specified behavior
   identically regardless of type of document change."
@@ -53,8 +59,8 @@ can be validly parsed into a double."
   
   (proxy [DocumentListener][]
     (changedUpdate [event] (behavior event))
-    (insertUpdate [event] (behavior event))
-    (removeUpdate [event] (behavior event))))
+    (insertUpdate  [event] (behavior event))
+    (removeUpdate  [event] (behavior event))))
 
 
 (defn create-text-fields
@@ -63,9 +69,8 @@ can be validly parsed into a double."
 
   (let [create-text-field 
       (fn [] 
-        (let [tf (JTextField. 15)]
-        (. tf setToolTipText "Input a temperature.")
-        tf))]
+        (doto (JTextField. 15)
+          (.setToolTipText "Input a temperature.")))]
     (def fahr-text-field (create-text-field))
     (def cels-text-field (create-text-field)))
 )
@@ -76,7 +81,8 @@ can be validly parsed into a double."
   []
 
   (let [
-    create-an-inner-panel (fn [] (JPanel. (GridLayout. 0 1 5 5)))
+;;    create-an-inner-panel (fn [] (JPanel. (GridLayout. 0 1 5 5)))
+    create-an-inner-panel #(JPanel. (GridLayout. 0 1 5 5))
     label-panel           (create-an-inner-panel)
     text-field-panel      (create-an-inner-panel)
     outer-panel           (JPanel. (BorderLayout.))]
