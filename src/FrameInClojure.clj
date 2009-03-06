@@ -81,7 +81,6 @@ can be validly parsed into a double."
   []
 
   (let [
-;;    create-an-inner-panel (fn [] (JPanel. (GridLayout. 0 1 5 5)))
     create-an-inner-panel #(JPanel. (GridLayout. 0 1 5 5))
     label-panel           (create-an-inner-panel)
     text-field-panel      (create-an-inner-panel)
@@ -102,7 +101,8 @@ can be validly parsed into a double."
       (.add text-field-panel BorderLayout/CENTER))))
 
 
-;; Note that we are defining variables here, and not functions:
+;; Note that we are defining action variables here,
+;; and not functions:
 (def clear-action (proxy [AbstractAction] ["Clear"]
   (actionPerformed [event]
     (. fahr-text-field setText "")
