@@ -8,6 +8,9 @@
            JFrame JPanel JButton JMenu JMenuBar JTextField JLabel)
            (javax.swing.event DocumentListener)))
 
+(def fahr-text-field nil)
+(def cels-text-field nil)
+
 
 (defn f2c
   "Converts a Fahrenheit temperature value to Celsius."
@@ -63,17 +66,39 @@ can be validly parsed into a double."
     (removeUpdate  [event] (behavior event))))
 
 
-(defn create-text-fields
-  "Creates the Fahrenheit and Celsius temperature text fields."
-  []
+(defn create-a-text-field []
+  (doto (JTextField. 15)
+    (.setToolTipText "Input a temperature.")))
 
-  (let [create-text-field 
-      (fn [] 
-        (doto (JTextField. 15)
-          (.setToolTipText "Input a temperature.")))]
-    (def fahr-text-field (create-text-field))
-    (def cels-text-field (create-text-field)))
-)
+
+(defn get-fahr-text-field []
+  (if fahr-text-field 
+    fahr-text-field
+    (do
+      (def fahr-text-field (create-a-text-field))
+      fahr-text-field)))
+
+(defn get-cels-text-field []
+  (if cels-text-field 
+    cels-text-field
+    (do
+      (def cels-text-field (create-a-text-field))
+      cels-text-field)))
+
+
+
+
+;; (defn create-text-fields
+;;   "Creates the Fahrenheit and Celsius temperature text fields."
+;;   []
+
+;;   (let [create-text-field 
+;;       (fn [] 
+;;         (doto (JTextField. 15)
+;;           (.setToolTipText "Input a temperature.")))]
+;;     (def fahr-text-field (create-text-field))
+;;     (def cels-text-field (create-text-field)))
+;; )
 
 
 (defn create-converters-panel
@@ -90,43 +115,52 @@ can be validly parsed into a double."
       (.add (JLabel. "Fahrenheit:  "))
       (.add (JLabel. "Celsius:     ")))
 
-    (create-text-fields)
-
     (doto text-field-panel
-      (.add fahr-text-field)
-      (.add cels-text-field))
+      (.add (get-fahr-text-field))
+      (.add (get-cels-text-field)))
 
     (doto outer-panel
       (.add label-panel BorderLayout/WEST)
       (.add text-field-panel BorderLayout/CENTER))))
 
 
-;; Note that we are defining action variables here,
-;; and not functions:
-(def clear-action (proxy [AbstractAction] ["Clear"]
-  (actionPerformed [event]
-    (. fahr-text-field setText "")
-    (. cels-text-field setText ""))))
+(defn create-action
+  "Creates an implementation of AbstractAction."
+  [name behavior options]
+
+  (let [
+    action (proxy [AbstractAction] [name]
+      (actionPerformed [event] (behavior event)))]
+  action))
 
 
-(def exit-action (proxy [AbstractAction] ["Exit"]
-  (actionPerformed [event] (. System exit 0))))
+(def clear-action (create-action "Clear"
+    (fn [_]
+      (. (get-fahr-text-field) setText "")
+      (. (get-cels-text-field) setText ""))
+    nil))
 
 
-(def f2c-action  (proxy [AbstractAction] ["F --> C"]
-  (actionPerformed [event] 
-    (let [text (. fahr-text-field getText)
+(def exit-action (create-action "Exit"
+  (fn [_] (. System exit 0)) nil))
+
+
+(def f2c-action (create-action "F --> C"
+  (fn [_]
+    (let [text (. (get-fahr-text-field) getText)
       f (. Double parseDouble text)
       c (f2c f)]
-      (. cels-text-field setText (str c))))))
+      (. (get-cels-text-field) setText (str c)))) nil))
 
 
-(def c2f-action  (proxy [AbstractAction] ["C --> F"]
-  (actionPerformed [event] 
-    (let [text (. cels-text-field getText)
+
+(def c2f-action  (create-action "C --> F"
+  (fn [_]
+    (let [text (. (get-cels-text-field) getText)
       c (. Double parseDouble text)
       f (c2f c)]
-      (. fahr-text-field setText (str f))))))
+      (. (get-fahr-text-field) setText (str f)))) nil))
+
 
 
 (defn clear-enabler
@@ -136,8 +170,8 @@ can be validly parsed into a double."
   [_]
 
   (let [
-    f (has-text? fahr-text-field)
-    c (has-text? cels-text-field)
+    f (has-text? (get-fahr-text-field))
+    c (has-text? (get-cels-text-field))
     should-enable (or f c)]
 
     (. clear-action setEnabled should-enable)))
@@ -148,22 +182,22 @@ can be validly parsed into a double."
 
 
 (def enable-f2c-listener (create-simple-document-listener
-  (fn [_] (. f2c-action setEnabled (has-valid-double-text? fahr-text-field)))))
+  (fn [_] (. f2c-action setEnabled (has-valid-double-text? (get-fahr-text-field))))))
 
 
 (def enable-c2f-listener (create-simple-document-listener
-  (fn [_] (. c2f-action setEnabled (has-valid-double-text? cels-text-field)))))
+  (fn [_] (. c2f-action setEnabled (has-valid-double-text? (get-cels-text-field))))))
 
 
 (defn setup-text-field-listeners
 "Attached the clear and temperature conversion action enabler
 listeners to the text fields."
 []
-    (doto (.. fahr-text-field (getDocument))
+    (doto (.. (get-fahr-text-field) (getDocument))
       (.addDocumentListener clear-doc-listener)
       (.addDocumentListener enable-f2c-listener))
 
-    (doto (.. cels-text-field (getDocument))
+    (doto (.. (get-cels-text-field) (getDocument))
       (.addDocumentListener clear-doc-listener)
       (.addDocumentListener enable-c2f-listener)))
 
@@ -238,7 +272,8 @@ appropriately for program startup."
 (defn create-frame
   "Creates the main JFrame used by the program."
   []
-  
+
+;;  (create-text-fields)
   (let [f (JFrame. "Fahrenheit <--> Celsius Converter")
     content-pane (. f getContentPane)]
 
