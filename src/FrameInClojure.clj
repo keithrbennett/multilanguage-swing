@@ -8,9 +8,6 @@
            JFrame JPanel JButton JMenu JMenuBar JTextField JLabel)
            (javax.swing.event DocumentListener)))
 
-(def fahr-text-field nil)
-(def cels-text-field nil)
-
 
 (defn f2c
   "Converts a Fahrenheit temperature value to Celsius."
@@ -71,7 +68,10 @@ can be validly parsed into a double."
     (.setToolTipText "Input a temperature.")))
 
 
-;; This function was originally written as:
+;; This function was originally written to use a fahr-text-field
+;; variable initialized to nil at the top of the file:
+
+;; (def fahr-text-field nil)
 
 ;;(defn get-fahr-text-field []
 ;;  (if fahr-text-field 
@@ -80,41 +80,25 @@ can be validly parsed into a double."
 ;;      (def fahr-text-field (create-a-text-field))
 ;;      fahr-text-field)))
 
+;; Then the IRC guys told me about delay:
 
 ;;(def get-fahr-text-field
 ;;  (let [x (delay (create-a-text-field))]
 ;;    #(force x)))
 
-;; From slashus2:
+;; Then I asked if there wasn't a yet better way.
+;; I got this macro from slashus2:
 (defmacro lazy-init [f & args] 
 	`(let [x# (delay (~f ~@args))] 
 		#(force x#)))
 
-;; (lazy-init get-fahr-text-field (create-a-text-field))
+;; ...which enabled me to reduce the function to the line below.
+;; Amazing!!!
 
 (def get-fahr-text-field (lazy-init create-a-text-field))
 
-;; TODO: Write macro so the above can be reduced to:
-;; (def get-fahr-text-field
-;;   (lazy-init (create-a-text-field)))
 
-
-
-
-;;(defn get-fahr-text-field []
-;;  (if fahr-text-field 
-;;    fahr-text-field
-;;    (do
-;;      (def fahr-text-field (create-a-text-field))
-;;      fahr-text-field)))
-
-
-(defn get-cels-text-field []
-  (if cels-text-field 
-    cels-text-field
-    (do
-      (def cels-text-field (create-a-text-field))
-      cels-text-field)))
+(def get-cels-text-field (lazy-init create-a-text-field))
 
 
 (defn create-converters-panel
