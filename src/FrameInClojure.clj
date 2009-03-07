@@ -1,5 +1,6 @@
 ;; Enhanced temperature conversion utility written in Clojure.
 ;; - Keith Bennett, March 2009
+;; kbennett -at- bbsinc -dot- biz
 
 
 (ns temp-converter
