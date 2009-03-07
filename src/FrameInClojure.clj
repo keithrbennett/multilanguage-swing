@@ -261,7 +261,6 @@ listeners to the text fields."
 
     (. component setLocation new-x new-y))
 
-    ;; return the component
     component
 )
 
@@ -270,6 +269,8 @@ listeners to the text fields."
 "Sets up the actions to have the enabled/disabled state set
 appropriately for program startup."
 []
+;; Default is enabled, so we only need to explicitly set
+;; those actions that need to be disabled.
 (doseq  [a [clear-action f2c-action c2f-action]] (.setEnabled a false)))
 
 
