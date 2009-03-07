@@ -63,7 +63,10 @@ can be validly parsed into a double."
     (removeUpdate  [event] (behavior event))))
 
 
-(defn create-a-text-field []
+(defn create-a-text-field
+  "Creates a temperature text field."
+  []
+ 
   (doto (JTextField. 15)
     (.setToolTipText "Input a temperature.")))
 
@@ -89,8 +92,8 @@ can be validly parsed into a double."
 ;; Then I asked if there wasn't a yet better way.
 ;; I got this macro from slashus2:
 (defmacro lazy-init [f & args] 
-	`(let [x# (delay (~f ~@args))] 
-		#(force x#)))
+  `(let [x# (delay (~f ~@args))] 
+    #(force x#)))
 
 ;; ...which enabled me to reduce the function to the line below.
 ;; Amazing!!!
@@ -224,7 +227,9 @@ listeners to the text fields."
       (.add convert-menu))))
 
 
-(defn create-buttons-panel []
+(defn create-buttons-panel 
+"Creates the panel with conversion, clear, and exit buttons."
+[]
   (let [
     inner-panel (JPanel. (GridLayout. 1 0 5 5))
     outer-panel (JPanel. (BorderLayout.))]
@@ -273,7 +278,6 @@ appropriately for program startup."
   "Creates the main JFrame used by the program."
   []
 
-;;  (create-text-fields)
   (let [f (JFrame. "Fahrenheit <--> Celsius Converter")
     content-pane (. f getContentPane)]
 
@@ -293,7 +297,9 @@ appropriately for program startup."
 
 
 (defn main
-"Highest level entry point code goes here, just as a convention."
+"Main is defined here to indicate the location of the program's
+entry point more explicitly than merely including statements
+outside of a function."
  []
     (. (create-frame) setVisible true))
 
