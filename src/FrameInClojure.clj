@@ -71,12 +71,43 @@ can be validly parsed into a double."
     (.setToolTipText "Input a temperature.")))
 
 
-(defn get-fahr-text-field []
-  (if fahr-text-field 
-    fahr-text-field
-    (do
-      (def fahr-text-field (create-a-text-field))
-      fahr-text-field)))
+;; This function was originally written as:
+
+;;(defn get-fahr-text-field []
+;;  (if fahr-text-field 
+;;    fahr-text-field
+;;    (do
+;;      (def fahr-text-field (create-a-text-field))
+;;      fahr-text-field)))
+
+
+;;(def get-fahr-text-field
+;;  (let [x (delay (create-a-text-field))]
+;;    #(force x)))
+
+;; From slashus2:
+(defmacro lazy-init [f & args] 
+	`(let [x# (delay (~f ~@args))] 
+		#(force x#)))
+
+;; (lazy-init get-fahr-text-field (create-a-text-field))
+
+(def get-fahr-text-field (lazy-init create-a-text-field))
+
+;; TODO: Write macro so the above can be reduced to:
+;; (def get-fahr-text-field
+;;   (lazy-init (create-a-text-field)))
+
+
+
+
+;;(defn get-fahr-text-field []
+;;  (if fahr-text-field 
+;;    fahr-text-field
+;;    (do
+;;      (def fahr-text-field (create-a-text-field))
+;;      fahr-text-field)))
+
 
 (defn get-cels-text-field []
   (if cels-text-field 
@@ -84,21 +115,6 @@ can be validly parsed into a double."
     (do
       (def cels-text-field (create-a-text-field))
       cels-text-field)))
-
-
-
-
-;; (defn create-text-fields
-;;   "Creates the Fahrenheit and Celsius temperature text fields."
-;;   []
-
-;;   (let [create-text-field 
-;;       (fn [] 
-;;         (doto (JTextField. 15)
-;;           (.setToolTipText "Input a temperature.")))]
-;;     (def fahr-text-field (create-text-field))
-;;     (def cels-text-field (create-text-field)))
-;; )
 
 
 (defn create-converters-panel
