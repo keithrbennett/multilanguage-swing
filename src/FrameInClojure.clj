@@ -15,15 +15,15 @@
 
 
 (defn f2c
-  "Converts a Fahrenheit temperature value to Celsius."
-  [f]
+"Converts a Fahrenheit temperature value to Celsius."
+[f]
 
   (/ (* 5.0 (- f 32.0)) 9.0))
 
 
 (defn c2f
-  "Converts a Celsius temperature value to Fahrenheit."
-  [c]
+"Converts a Celsius temperature value to Fahrenheit."
+[c]
 
   (+ 32.0 (/ (* 9.0 c) 5.0)))
 
@@ -58,9 +58,9 @@ can be validly parsed into a double."
 ;; at macro-expand time.  Clojure does *not* use
 ;; java.reflect.Proxy.
 (defn create-simple-document-listener
-  "Returns a DocumentListener that performs the specified behavior
-  identically regardless of type of document change."
-  [behavior]
+"Returns a DocumentListener that performs the specified behavior
+identically regardless of type of document change."
+[behavior]
   
   (proxy [DocumentListener][]
     (changedUpdate [event] (behavior event))
@@ -110,8 +110,8 @@ can be validly parsed into a double."
 
 
 (defn create-converters-panel
-  "Creates panel containing the labels and text fields."
-  []
+"Creates panel containing the labels and text fields."
+[]
 
   (let [
     create-an-inner-panel #(JPanel. (GridLayout. 0 1 5 5))
@@ -133,8 +133,8 @@ can be validly parsed into a double."
 
 
 (defn create-action
-  "Creates an implementation of AbstractAction."
-  [name behavior options]
+"Creates an implementation of AbstractAction."
+[name behavior options]
 
   (let [
     action (proxy [AbstractAction] [name]
@@ -151,42 +151,41 @@ can be validly parsed into a double."
       (. (get-fahr-text-field) setText "")
       (. (get-cels-text-field) setText ""))
 
-    {
-      Action/SHORT_DESCRIPTION  "Reset to empty the temperature fields",
+    { Action/SHORT_DESCRIPTION  "Reset to empty the temperature fields",
         Action/ACCELERATOR_KEY
             (. KeyStroke getKeyStroke KeyEvent/VK_L Event/CTRL_MASK) }))
 
 
-
 (def exit-action (create-action "Exit"
-  (fn [_] (. System exit 0))
+    (fn [_] (. System exit 0))
 
-  { Action/SHORT_DESCRIPTION  "Exit this program",
-        Action/ACCELERATOR_KEY
+    { Action/SHORT_DESCRIPTION  "Exit this program",
+      Action/ACCELERATOR_KEY
             (. KeyStroke getKeyStroke KeyEvent/VK_X Event/CTRL_MASK) }))
 
 
-
 (def f2c-action (create-action "F --> C"
-  (fn [_]
-    (let [text (. (get-fahr-text-field) getText)
-      f (. Double parseDouble text)
-      c (f2c f)]
-      (. (get-cels-text-field) setText (str c))))
+    (fn [_]
+      (let [
+        text (. (get-fahr-text-field) getText)
+        f (. Double parseDouble text)
+        c (f2c f)]
+        
+        (. (get-cels-text-field) setText (str c))))
 
-    {
-      Action/SHORT_DESCRIPTION  "Convert from Fahrenheit to Celsius",
+    { Action/SHORT_DESCRIPTION  "Convert from Fahrenheit to Celsius",
         Action/ACCELERATOR_KEY
             (. KeyStroke getKeyStroke KeyEvent/VK_S Event/CTRL_MASK) }))
 
 
-
 (def c2f-action  (create-action "C --> F"
-  (fn [_]
-    (let [text (. (get-cels-text-field) getText)
-      c (. Double parseDouble text)
-      f (c2f c)]
-      (. (get-fahr-text-field) setText (str f)))) 
+    (fn [_]
+      (let [
+        text (. (get-cels-text-field) getText)
+        c (. Double parseDouble text)
+        f (c2f c)]
+      
+        (. (get-fahr-text-field) setText (str f)))) 
 
     { Action/SHORT_DESCRIPTION  "Convert from Celsius to Fahrenheit",
         Action/ACCELERATOR_KEY
@@ -195,10 +194,10 @@ can be validly parsed into a double."
 
 
 (defn clear-enabler
-  "Enables or disables the clear action (and thereby button 
-  and menu item) if, and only if, there is text in at least
-  one of the two text fields."
-  [_]
+"Enables or disables the clear action (and thereby button 
+and menu item) if, and only if, there is text in at least
+one of the two text fields."
+[_]
 
   (let [
     f (has-text? (get-fahr-text-field))
@@ -224,19 +223,19 @@ can be validly parsed into a double."
 "Attached the clear and temperature conversion action enabler
 listeners to the text fields."
 []
-    (doto (.. (get-fahr-text-field) (getDocument))
-      (.addDocumentListener clear-doc-listener)
-      (.addDocumentListener enable-f2c-listener))
 
-    (doto (.. (get-cels-text-field) (getDocument))
-      (.addDocumentListener clear-doc-listener)
-      (.addDocumentListener enable-c2f-listener)))
+  (doto (.. (get-fahr-text-field) (getDocument))
+    (.addDocumentListener clear-doc-listener)
+    (.addDocumentListener enable-f2c-listener))
 
+  (doto (.. (get-cels-text-field) (getDocument))
+    (.addDocumentListener clear-doc-listener)
+    (.addDocumentListener enable-c2f-listener)))
 
 
 (defn create-menu-bar
-  "Creates the menu bar with File, Edit, and Convert menus."
-  []
+"Creates the menu bar with File, Edit, and Convert menus."
+[]
 
   (let [
     menubar (JMenuBar.)
@@ -274,9 +273,9 @@ listeners to the text fields."
 
 
 (defn center-on-screen 
-  "Centers a component on the screen based on the screen dimensions
-   reported by the Java runtime."
-  [component]
+"Centers a component on the screen based on the screen dimensions
+reported by the Java runtime."
+[component]
   
   (let [
     screen-size   (.. Toolkit getDefaultToolkit getScreenSize)
@@ -297,17 +296,17 @@ listeners to the text fields."
 "Sets up the actions to have the enabled/disabled state set
 appropriately for program startup."
 []
-;; Default is enabled, so we only need to explicitly set
-;; those actions that need to be disabled.
-(doseq  [a [clear-action f2c-action c2f-action]] (.setEnabled a false)))
-
+  ;; Default is enabled, so we only need to explicitly set
+  ;; those actions that need to be disabled.
+  (doseq  [a [clear-action f2c-action c2f-action]] (.setEnabled a false)))
 
 
 (defn create-frame
-  "Creates the main JFrame used by the program."
-  []
+"Creates the main JFrame used by the program."
+[]
 
-  (let [f (JFrame. "Fahrenheit <--> Celsius Converter")
+  (let [
+    f (JFrame. "Fahrenheit <--> Celsius Converter")
     content-pane (. f getContentPane)]
 
     (doto content-pane
@@ -329,7 +328,7 @@ appropriately for program startup."
 "Main is defined here to indicate the location of the program's
 entry point more explicitly than merely including statements
 outside of a function."
- []
+[]
     (. (create-frame) setVisible true))
 
 
