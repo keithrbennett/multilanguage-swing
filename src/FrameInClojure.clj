@@ -2,11 +2,15 @@
 ;; - Keith Bennett, March 2009
 ;; kbennett -at- bbsinc -dot- biz
 
+;; TODO add action options.
+
 
 (ns temp-converter
-  (:import (java.awt BorderLayout GridLayout Toolkit)
+  (:import (java.awt BorderLayout Event GridLayout Toolkit)
+           (java.awt.event KeyEvent)
            (javax.swing AbstractAction Action BorderFactory 
-           JFrame JPanel JButton JMenu JMenuBar JTextField JLabel)
+           JFrame JPanel JButton JMenu JMenuBar JTextField JLabel
+           KeyStroke)
            (javax.swing.event DocumentListener)))
 
 
@@ -135,18 +139,32 @@ can be validly parsed into a double."
   (let [
     action (proxy [AbstractAction] [name]
       (actionPerformed [event] (behavior event)))]
-  action))
+
+    (if options
+      (doseq [key (keys options)] (. action putValue key (options key))))
+    action))
+
 
 
 (def clear-action (create-action "Clear"
     (fn [_]
       (. (get-fahr-text-field) setText "")
       (. (get-cels-text-field) setText ""))
-    nil))
+
+    {
+      Action/SHORT_DESCRIPTION  "Reset to empty the temperature fields",
+        Action/ACCELERATOR_KEY
+            (. KeyStroke getKeyStroke KeyEvent/VK_L Event/CTRL_MASK) }))
+
 
 
 (def exit-action (create-action "Exit"
-  (fn [_] (. System exit 0)) nil))
+  (fn [_] (. System exit 0))
+
+  { Action/SHORT_DESCRIPTION  "Exit this program",
+        Action/ACCELERATOR_KEY
+            (. KeyStroke getKeyStroke KeyEvent/VK_X Event/CTRL_MASK) }))
+
 
 
 (def f2c-action (create-action "F --> C"
@@ -154,7 +172,12 @@ can be validly parsed into a double."
     (let [text (. (get-fahr-text-field) getText)
       f (. Double parseDouble text)
       c (f2c f)]
-      (. (get-cels-text-field) setText (str c)))) nil))
+      (. (get-cels-text-field) setText (str c))))
+
+    {
+      Action/SHORT_DESCRIPTION  "Convert from Fahrenheit to Celsius",
+        Action/ACCELERATOR_KEY
+            (. KeyStroke getKeyStroke KeyEvent/VK_S Event/CTRL_MASK) }))
 
 
 
@@ -163,7 +186,11 @@ can be validly parsed into a double."
     (let [text (. (get-cels-text-field) getText)
       c (. Double parseDouble text)
       f (c2f c)]
-      (. (get-fahr-text-field) setText (str f)))) nil))
+      (. (get-fahr-text-field) setText (str f)))) 
+
+    { Action/SHORT_DESCRIPTION  "Convert from Celsius to Fahrenheit",
+        Action/ACCELERATOR_KEY
+            (. KeyStroke getKeyStroke KeyEvent/VK_T Event/CTRL_MASK) }))
 
 
 
