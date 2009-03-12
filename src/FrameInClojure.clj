@@ -209,30 +209,29 @@ one of the two text fields."
     (.setEnabled clear-action should-enable)))
 
  
-
-(def clear-doc-listener (create-simple-document-listener clear-enabler))
-
-
-(def enable-f2c-listener (create-simple-document-listener
-  (fn [_] (.setEnabled f2c-action (has-valid-double-text? (get-fahr-text-field))))))
-
-
-(def enable-c2f-listener (create-simple-document-listener
-  (fn [_] (.setEnabled c2f-action (has-valid-double-text? (get-cels-text-field))))))
-
-
 (defn setup-text-field-listeners
 "Attached the clear and temperature conversion action enabler
 listeners to the text fields."
 []
 
-  (doto (.getDocument (get-fahr-text-field))
-    (.addDocumentListener clear-doc-listener)
-    (.addDocumentListener enable-f2c-listener))
+  (let [
+    clear-enabler (create-simple-document-listener clear-enabler)
+    
+    f2c-enabler (create-simple-document-listener
+        (fn [_] (.setEnabled f2c-action 
+        (has-valid-double-text? (get-fahr-text-field)))))
 
-  (doto (.getDocument (get-cels-text-field))
-    (.addDocumentListener clear-doc-listener)
-    (.addDocumentListener enable-c2f-listener)))
+    c2f-enabler (create-simple-document-listener
+        (fn [_] (.setEnabled c2f-action 
+        (has-valid-double-text? (get-cels-text-field)))))]
+
+    (doto (.getDocument (get-fahr-text-field))
+      (.addDocumentListener clear-enabler)
+      (.addDocumentListener f2c-enabler))
+
+    (doto (.getDocument (get-cels-text-field))
+      (.addDocumentListener clear-enabler)
+      (.addDocumentListener c2f-enabler))))
 
 
 (defn create-menu-bar
