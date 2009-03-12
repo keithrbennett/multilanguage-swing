@@ -2,8 +2,6 @@
 ;; - Keith Bennett, March 2009
 ;; kbennett -at- bbsinc -dot- biz
 
-;; TODO add action options.
-
 
 (ns temp-converter
   (:import (java.awt BorderLayout Event GridLayout Toolkit)
