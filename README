@@ -1,9 +1,14 @@
-To run the program from the Java source files:
+To run the Java program:
 javac *java
 java FrameInJava
 
-To run the program from the Ruby source files:
+To run the Ruby program:
 rm *class
+# (or del *class in Windows)
 jruby FrameInRuby
+
+To run the Clojure program:
+java -jar clojure.jar FrameInClojure.clj
+# (specify the location of clojure.jar as necessary)
 
 - Keith Bennett
