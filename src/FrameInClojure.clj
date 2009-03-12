@@ -33,6 +33,7 @@
   (and (not (nil? s)) (> (count s) 0)))
 
 
+
 (defn field-has-text?
 "Returns whether or not there is text in a text field."
 [text-field]
@@ -44,16 +45,14 @@
 can be validly parsed into a double."
 [field]
 
-  (if (not (field-has-text? field))
-    false
-
     (let [
       text (. field getText)]
-      (try
-        (. Double parseDouble text)
-        true
-      (catch NumberFormatException e
-        false)))))
+      (and (has-text? text)
+        (try
+          (. Double parseDouble text)
+          true
+        (catch NumberFormatException e
+          false)))))
 
 
 ;; From CHouser: the first time a set of superclasses 
