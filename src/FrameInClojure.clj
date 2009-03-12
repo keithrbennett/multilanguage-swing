@@ -27,11 +27,16 @@
 
 
 (defn has-text?
+"Returns whether or not a value contains text
+(i.e. is not nil, and has a size > 0."
+[s]
+  (and (not (nil? s)) (> (count s) 0)))
+
+
+(defn field-has-text?
 "Returns whether or not there is text in a text field."
 [text-field]
-
-  (let [text (. text-field getText)]
-    (and (not (nil? text)) (> (count text) 0))))
+  (has-text? (. text-field getText)))
 
 
 (defn has-valid-double-text?
@@ -39,7 +44,7 @@
 can be validly parsed into a double."
 [field]
 
-  (if (not (has-text? field))
+  (if (not (field-has-text? field))
     false
 
     (let [
@@ -198,8 +203,8 @@ one of the two text fields."
 [_]
 
   (let [
-    f (has-text? (get-fahr-text-field))
-    c (has-text? (get-cels-text-field))
+    f (field-has-text? (get-fahr-text-field))
+    c (field-has-text? (get-cels-text-field))
     should-enable (or f c)]
 
     (. clear-action setEnabled should-enable)))
