@@ -37,7 +37,7 @@
 (defn field-has-text?
 "Returns whether or not there is text in a text field."
 [text-field]
-  (has-text? (. text-field getText)))
+  (has-text? (.getText text-field)))
 
 
 (defn has-valid-double-text?
@@ -46,10 +46,10 @@ can be validly parsed into a double."
 [field]
 
     (let [
-      text (. field getText)]
+      text (.getText field)]
       (and (has-text? text)
         (try
-          (. Double parseDouble text)
+          (Double/parseDouble text)
           true
         (catch NumberFormatException e
           false)))))
@@ -143,55 +143,55 @@ identically regardless of type of document change."
       (actionPerformed [event] (behavior event)))]
 
     (if options
-      (doseq [key (keys options)] (. action putValue key (options key))))
+      (doseq [key (keys options)] (.putValue action key (options key))))
     action))
 
 
 
 (def clear-action (create-action "Clear"
     (fn [_]
-      (. (get-fahr-text-field) setText "")
-      (. (get-cels-text-field) setText ""))
+      (.setText (get-fahr-text-field) "")
+      (.setText (get-cels-text-field) ""))
 
     { Action/SHORT_DESCRIPTION  "Reset to empty the temperature fields",
         Action/ACCELERATOR_KEY
-            (. KeyStroke getKeyStroke KeyEvent/VK_L Event/CTRL_MASK) }))
+            (KeyStroke/getKeyStroke KeyEvent/VK_L Event/CTRL_MASK) }))
 
 
 (def exit-action (create-action "Exit"
-    (fn [_] (. System exit 0))
+    (fn [_] (System/exit 0))
 
     { Action/SHORT_DESCRIPTION  "Exit this program",
       Action/ACCELERATOR_KEY
-            (. KeyStroke getKeyStroke KeyEvent/VK_X Event/CTRL_MASK) }))
+            (KeyStroke/getKeyStroke KeyEvent/VK_X Event/CTRL_MASK) }))
 
 
 (def f2c-action (create-action "F --> C"
     (fn [_]
       (let [
-        text (. (get-fahr-text-field) getText)
-        f (. Double parseDouble text)
+        text (.getText (get-fahr-text-field))
+        f (Double/parseDouble text)
         c (f2c f)]
         
-        (. (get-cels-text-field) setText (str c))))
+        (.setText (get-cels-text-field) (str c))))
 
     { Action/SHORT_DESCRIPTION  "Convert from Fahrenheit to Celsius",
         Action/ACCELERATOR_KEY
-            (. KeyStroke getKeyStroke KeyEvent/VK_S Event/CTRL_MASK) }))
+            (KeyStroke/getKeyStroke KeyEvent/VK_S Event/CTRL_MASK) }))
 
 
 (def c2f-action  (create-action "C --> F"
     (fn [_]
       (let [
-        text (. (get-cels-text-field) getText)
-        c (. Double parseDouble text)
+        text (.getText (get-cels-text-field))
+        c (Double/parseDouble text)
         f (c2f c)]
       
-        (. (get-fahr-text-field) setText (str f)))) 
+        (.setText (get-fahr-text-field) (str f)))) 
 
     { Action/SHORT_DESCRIPTION  "Convert from Celsius to Fahrenheit",
         Action/ACCELERATOR_KEY
-            (. KeyStroke getKeyStroke KeyEvent/VK_T Event/CTRL_MASK) }))
+            (KeyStroke/getKeyStroke KeyEvent/VK_T Event/CTRL_MASK) }))
 
 
 
@@ -206,7 +206,7 @@ one of the two text fields."
     c (field-has-text? (get-cels-text-field))
     should-enable (or f c)]
 
-    (. clear-action setEnabled should-enable)))
+    (.setEnabled clear-action should-enable)))
 
  
 
@@ -214,11 +214,11 @@ one of the two text fields."
 
 
 (def enable-f2c-listener (create-simple-document-listener
-  (fn [_] (. f2c-action setEnabled (has-valid-double-text? (get-fahr-text-field))))))
+  (fn [_] (.setEnabled f2c-action (has-valid-double-text? (get-fahr-text-field))))))
 
 
 (def enable-c2f-listener (create-simple-document-listener
-  (fn [_] (. c2f-action setEnabled (has-valid-double-text? (get-cels-text-field))))))
+  (fn [_] (.setEnabled c2f-action (has-valid-double-text? (get-cels-text-field))))))
 
 
 (defn setup-text-field-listeners
@@ -226,11 +226,11 @@ one of the two text fields."
 listeners to the text fields."
 []
 
-  (doto (.. (get-fahr-text-field) (getDocument))
+  (doto (.getDocument (get-fahr-text-field))
     (.addDocumentListener clear-doc-listener)
     (.addDocumentListener enable-f2c-listener))
 
-  (doto (.. (get-cels-text-field) (getDocument))
+  (doto (.getDocument (get-cels-text-field))
     (.addDocumentListener clear-doc-listener)
     (.addDocumentListener enable-c2f-listener)))
 
@@ -245,10 +245,10 @@ listeners to the text fields."
     edit-menu (JMenu. "Edit")
     convert-menu (JMenu. "Convert")]
 
-    (. file-menu    add exit-action)
-    (. edit-menu    add clear-action)
-    (. convert-menu add f2c-action)
-    (. convert-menu add c2f-action)
+    (.add file-menu    exit-action)
+    (.add edit-menu    clear-action)
+    (.add convert-menu f2c-action)
+    (.add convert-menu c2f-action)
     
     (doto menubar
       (.add file-menu)
@@ -271,7 +271,7 @@ listeners to the text fields."
 
     (doto outer-panel
       (.add inner-panel BorderLayout/EAST)
-      (.setBorder (. BorderFactory createEmptyBorder 10 0 0 0)))))
+      (.setBorder (BorderFactory/createEmptyBorder 10 0 0 0)))))
 
 
 (defn center-on-screen 
@@ -281,14 +281,14 @@ reported by the Java runtime."
   
   (let [
     screen-size   (.. Toolkit getDefaultToolkit getScreenSize)
-    screen-width  (.. screen-size getWidth)
-    screen-height (.. screen-size getHeight)
-    comp-width    (.. component getWidth)
-    comp-height   (.. component getHeight)
+    screen-width  (.getWidth screen-size)
+    screen-height (.getHeight screen-size)
+    comp-width    (.getWidth component)
+    comp-height   (.getHeight component)
     new-x         (/ (- screen-width comp-width) 2)
     new-y         (/ (- screen-height comp-height) 2)]
 
-    (. component setLocation new-x new-y))
+    (.setLocation component new-x new-y))
 
     component
 )
@@ -309,12 +309,12 @@ appropriately for program startup."
 
   (let [
     f (JFrame. "Fahrenheit <--> Celsius Converter")
-    content-pane (. f getContentPane)]
+    content-pane (.getContentPane f)]
 
     (doto content-pane
       (.add (create-converters-panel) BorderLayout/CENTER)
       (.add (create-buttons-panel) BorderLayout/SOUTH)
-      (.setBorder (. BorderFactory createEmptyBorder 12 12 12 12)))
+      (.setBorder (BorderFactory/createEmptyBorder 12 12 12 12)))
 
     (doto f
       (.setDefaultCloseOperation JFrame/EXIT_ON_CLOSE)
@@ -331,7 +331,7 @@ appropriately for program startup."
 entry point more explicitly than merely including statements
 outside of a function."
 []
-    (. (create-frame) setVisible true))
+    (.setVisible (create-frame) true))
 
 
 (main)
