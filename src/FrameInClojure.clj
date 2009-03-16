@@ -202,9 +202,9 @@ one of the two text fields."
 [_]
 
   (let [
-    f (field-has-text? (get-fahr-text-field))
-    c (field-has-text? (get-cels-text-field))
-    should-enable (or f c)]
+    f-has-text (field-has-text? (get-fahr-text-field))
+    c-has-text (field-has-text? (get-cels-text-field))
+    should-enable (or f-has-text c-has-text)]
 
     (.setEnabled clear-action should-enable)))
 
@@ -330,7 +330,16 @@ appropriately for program startup."
 entry point more explicitly than merely including statements
 outside of a function."
 []
-    (.setVisible (create-frame) true))
+    ; We create a global variable here so that the frame can be
+    ; be inspected when this file is loaded in REPL (the Clojure
+    ; interactive command line, something like irb in Ruby), as in:
+
+    ; (load-file "FrameInClojure.clj")
+    ; (in-ns 'temp-converter)
+    ; (println main-frame)  ; illustrates access to the program's frame
+
+    (def main-frame (create-frame))
+    (.setVisible main-frame true))
 
 
 (main)
